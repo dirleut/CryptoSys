@@ -39,7 +39,7 @@ public:
     {
     public:
     MainWindow (String name)  : DocumentWindow (name, Colours::darkgrey,
-                                DocumentWindow::closeButton|DocumentWindow::minimiseButton)
+                                DocumentWindow::allButtons)
     {
         setUsingNativeTitleBar (true);
         setContentOwned (new MainComponent(), true);
@@ -47,7 +47,7 @@ public:
 #if JUCE_IOS || JUCE_ANDROID
         setFullScreen (true);
 #else
-        //setResizable (true, true);
+        setResizable (true, true);
         centreWithSize (getWidth(), getHeight());
 #endif
         setVisible (true);

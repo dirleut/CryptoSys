@@ -1,4 +1,9 @@
 #include "MainComponent.h"
+#include "utils.h"
+
+// Почему-то при applyKey можно использовать размер блока = N
+// А при modulo размер блока = N/2
+const int BLOCK_SIZE = 32;
 
 MainComponent::MainComponent()
 {
@@ -11,6 +16,7 @@ MainComponent::MainComponent()
     headerLabel.setColour(Label::textColourId, Colours::white);
     
     createNamedLabel(&inputKeyLength, &inputKeyLengthDesc, CharPointer_UTF8("Длина ключа"), Justification::right, Colours::white, Colour::fromHSV(darkPurple, 0.5, 0.3, 1.0));
+    inputKeyLength.setText(String(keyLength), dontSendNotification);
     // TODO проверка на правильность длины
     inputKeyLength.onTextChange = [this] {
         keyLength = inputKeyLength.getTextValue().toString().getIntValue();
@@ -26,26 +32,59 @@ MainComponent::MainComponent()
     privateKeySection.onTextChange = [this]{};
     
     createNamedLabel(&publicKeySection, &publicKeySectionDesc, CharPointer_UTF8("Открытый ключ"), Justification::right, Colours::white, Colour::fromHSV(darkPurple, 0.5, 0.3, 1.0));
-    privateKeySection.onTextChange = [this]{};
+    publicKeySection.onTextChange = [this]{};
 //===================================================================================================
     createNamedLabel(&keySection, &keySectionDesc, CharPointer_UTF8("Ключ"), Justification::right, Colours::white, Colour::fromHSV(darkPurple, 0.5, 0.3, 1.0));
-    privateKeySection.onTextChange = [this]{};
+    keySection.onTextChange = [this]{
+        // TODO проверить ключ на правильность
+        keyToApply = RSAKey(keySection.getTextValue().toString());
+    };
 //===================================================================================================
     addAndMakeVisible(keyEncrypt);
-    keyEncrypt.setButtonText(CharPointer_UTF8("Зашифровать"));
-    keyEncrypt.onClick = [this]{};
+    keyEncrypt.setButtonText(CharPointer_UTF8("Применить ключ"));
+    keyEncrypt.onClick = [this] {
+        encryptTextSection();
+    };
+//===================================================================================================
+    addAndMakeVisible(encodingLabel);
+    encodingLabel.setColour(Label::textColourId, Colours::white);
     
-    addAndMakeVisible(keyDecrypt);
-    keyDecrypt.setButtonText(CharPointer_UTF8("Расшифровать"));
-    keyDecrypt.onClick = [this]{};
+    addAndMakeVisible(binEncodingButton);
+    addAndMakeVisible(hexEncodingButton);
+    addAndMakeVisible(utf8EncodingButton);
+    utf8EncodingButton.setToggleState(true, dontSendNotification);
+    curToggleState = UTF8;
 
-    setSize (600, 400);
+    binEncodingButton.onClick = [this] {
+        decodeToBinary();
+    };
+    hexEncodingButton.onClick = [this] {
+        decodeToHex();
+    };
+    utf8EncodingButton.onClick = [this] {
+        decodeToUTF8();
+    };
+
+    binEncodingButton.setRadioGroupId(GenderButtons);
+    hexEncodingButton.setRadioGroupId(GenderButtons);
+    utf8EncodingButton.setRadioGroupId(GenderButtons);
+//===================================================================================================
+    addAndMakeVisible(textSection);
+    textSection.setCaretVisible(true);
+    textSection.setScrollbarsShown(true);
+    textSection.setMultiLine(true);
+    textSection.setText(CharPointer_UTF8("Введите текст для шифрования..."));
+
+    setSize (800, 450);
 }
+//===================================================================================================
 MainComponent::~MainComponent()
 {
     keysGenerateButton.removeListener(this);
     keyEncrypt.removeListener(this);
-    keyDecrypt.removeListener(this);
+    binEncodingButton.removeListener(this);
+    hexEncodingButton.removeListener(this);
+    utf8EncodingButton.removeListener(this);
 }
 
 void MainComponent::paint (Graphics& g)
@@ -75,6 +114,123 @@ void MainComponent::keyGen() {
     publicKeySection.setText(publicKey.toString(), dontSendNotification);
 }
 
+void MainComponent::applyKey(const std::string &block) {
+    // TODO проверка на int64
+    BigInteger T;
+    keyToApply.applyToValue(T);
+}
+
+void MainComponent::encryptTextSection() {
+    std::string toEncode(textSection.getTextValue().toString().toStdString());
+    std::string bitstr;
+    switch (curToggleState) {
+        // TODO ошибки
+        case Hex:
+            bitstr = hexToBinary(toEncode);
+            break;
+        case UTF8:
+            bitstr = UTF8ToBinary(toEncode);
+            break;
+        case Binary:
+            bitstr = toEncode;
+            break;
+        default:
+            break;
+    }
+    std::cout << bitstr << std::endl;
+    BigInteger T = fromBinString(bitstr);
+    keyToApply.applyToValue(T);
+    bitstr = fromBigInt(T);
+    std::cout << bitstr << std::endl;
+
+    std::string outstr;
+    switch (curToggleState) {
+        case Hex:
+            outstr = binaryToHex(bitstr);
+            break;
+        case UTF8:
+            outstr = binaryToUTF8(bitstr);
+            break;
+        case Binary:
+            outstr = bitstr;
+            break;
+        default:
+            // TODO ошибки
+            break;
+    }
+    textSection.setText(String(outstr));
+}
+
+void MainComponent::decodeToBinary() {
+    if (curToggleState == Binary) {
+        return;
+    }
+    std::string toEncode(textSection.getTextValue().toString().toStdString());
+    std::string encoded;
+    switch (curToggleState) {
+        case Hex:
+            if(isHex(toEncode)){
+                 encoded = hexToBinary(toEncode);
+            }
+            break;
+        case UTF8:
+            encoded = UTF8ToBinary(toEncode);
+            break;
+        default:
+            break;
+    }
+    curToggleState = Binary;
+    textSection.setText(String(encoded));
+}
+
+void MainComponent::decodeToHex() {
+    if (curToggleState == Hex) {
+        return;
+    }
+    std::string toEncode(textSection.getTextValue().toString().toStdString());
+    std::string encoded;
+    switch (curToggleState) {
+        case Binary:
+            if(isBinary(toEncode)){
+                 encoded = binaryToHex(toEncode);
+            }
+            break;
+        case UTF8:
+            toEncode = UTF8ToBinary(toEncode);
+            encoded = binaryToHex(toEncode);
+            break;
+        default:
+            break;
+    }
+    curToggleState = Hex;
+    textSection.setText(String(encoded));
+}
+
+void MainComponent::decodeToUTF8() {
+    if (curToggleState == UTF8) {
+        return;
+    }
+    std::string toEncode(textSection.getTextValue().toString().toStdString());
+    std::string encoded;
+    switch (curToggleState) {
+        case Binary:
+            if(isBinary(toEncode)){
+                encoded = binaryToUTF8(toEncode);
+            }
+            break;
+        case Hex:
+            if(isHex(toEncode)){
+                toEncode = hexToBinary(toEncode);
+                encoded = binaryToUTF8(toEncode);
+            }
+            break;
+        default:
+            break;
+    }
+    curToggleState = UTF8;
+    textSection.setText(String(encoded));
+}
+
 void MainComponent::createNamedLabel(Label *main, Label *attached, const String &text, Justification justification, Colour textColour, Colour backgroundColour) {
     addAndMakeVisible(attached);
     attached->setText(text, dontSendNotification);
@@ -91,14 +247,19 @@ void MainComponent::createNamedLabel(Label *main, Label *attached, const String 
 void MainComponent::resized()
 {
     headerLabel.setBounds (10, 10, getWidth() - 20, 35);
-    inputKeyLength.setBounds (105, 50, getWidth() - 500, 25);
+    inputKeyLength.setBounds (130, 50, 100, 25);
     
-    keysGenerateButton.setBounds (350, 50, getWidth() - 400, 25);
-    privateKeySection.setBounds(105, 80, getWidth() - 200, 25);
-    publicKeySection.setBounds(105, 110, getWidth() - 200, 25);
+    keysGenerateButton.setBounds (getWidth() - 400, 50, 200, 25);
+    privateKeySection.setBounds(130, 80, getWidth() - 200, 25);
+    publicKeySection.setBounds(130, 110, getWidth() - 200, 25);
     
-    keySection.setBounds(105, 160, getWidth() - 200 , 25);
+    keySection.setBounds(180, 170, getWidth() - 250 , 25);
+    keyEncrypt.setBounds (180, 200, 200, 25);
     
-    keyEncrypt.setBounds (105, 190, getWidth() - 500, 25);
-    keyDecrypt.setBounds (getWidth() - 295, 190, getWidth() - 500, 25);
+    encodingLabel.setBounds(20, 150, 100, 20);
+    binEncodingButton.setBounds(20, 170, 100, 20);
+    hexEncodingButton.setBounds(20, 190, 150, 20);
+    utf8EncodingButton.setBounds(20, 210, 100, 20);
+
+    textSection.setBounds(10, 240, getWidth() - 20, getHeight() - 250);
 }
