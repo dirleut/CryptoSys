@@ -1,7 +1,7 @@
 /*
   ==============================================================================
 
-    crypto.cpp
+    utils.cpp
     Created: 4 Nov 2019 11:51:03am
     Author:  Кирилл Фокин
 
@@ -44,7 +44,7 @@ const char* _hexCharToBin(char c) {
     }
 }
 
-std::string binaryToHex(const std::string &str) {
+bool binaryToHex(std::string &str) {
     std::string bitstr = str;
     // TODO обработка ошибок
     if(bitstr.size() % 4 != 0) {
@@ -65,17 +65,19 @@ std::string binaryToHex(const std::string &str) {
         result += ss.str();
         bitstr.erase(0, 4);
     }
-    return result;
+    str = result;
+    return true;
 }
 
-std::string hexToBinary(const std::string &hexstr) {
+bool hexToBinary(std::string &hexstr) {
     std::string bin;
     for(unsigned i = 0; i != hexstr.length(); ++i)
        bin += _hexCharToBin(hexstr[i]);
-    return bin;
+    hexstr = bin;
+    return true;
 }
 
-bool checkAndAddNextUTF8Bytes(std::stringstream &ss, std::string &symb, int n) {
+bool _checkAndAddNextUTF8Bytes(std::stringstream &ss, std::string &symb, int n) {
     std::string result;
     for(int i = 0; i < n; ++i) {
         std::bitset<8> nextByte;
@@ -90,53 +92,54 @@ bool checkAndAddNextUTF8Bytes(std::stringstream &ss, std::string &symb, int n) {
     return true;
 }
 
-std::string binaryToUTF8(const std::string &bitstr) {
+bool binaryToUTF8(std::string &bitstr) {
     std::stringstream ss(bitstr);
     std::string outstr;
-    
+
     while (ss.good()) {
         std::string symb;
         std::bitset<8> byte;
         ss >> byte;
-        
+
         std::string checkByte = byte.to_string();
         if(checkByte.find("0") == 0) {
             outstr += char(byte.to_ulong());
         }
         else if(checkByte.find("110") == 0) {
             symb += char(byte.to_ulong());
-            if(!checkAndAddNextUTF8Bytes(ss, symb, 1)) {
-                return "";
+            if(!_checkAndAddNextUTF8Bytes(ss, symb, 1)) {
+                return false;
             }
         }
         else if(checkByte.find("1110") == 0) {
             symb += char(byte.to_ulong());
-            if(!checkAndAddNextUTF8Bytes(ss, symb, 2)) {
-                return "";
+            if(!_checkAndAddNextUTF8Bytes(ss, symb, 2)) {
+                return false;
             }
         }
         else if(checkByte.find("11110") == 0) {
             symb += char(byte.to_ulong());
-            if(!checkAndAddNextUTF8Bytes(ss, symb, 3)) {
-                return "";
+            if(!_checkAndAddNextUTF8Bytes(ss, symb, 3)) {
+                return false;
             }
         }
         else
-            return "";
+            return false;
         outstr += symb;
         //outstr += char(bits.to_ulong());
         //std::cout << outstr << std::endl;
     }
-    return outstr;
+    bitstr = outstr;
+    return true;
 }
 
-std::string UTF8ToBinary(const std::string &utf8str) {
+bool UTF8ToBinary(std::string &utf8str) {
     std::string outstr;
-    for (std::size_t i = 0; i < utf8str.size(); ++i)
-    {
+    for (std::size_t i = 0; i < utf8str.size(); ++i) {
         outstr += std::bitset<8>(utf8str.c_str()[i]).to_string();
     }
-    return outstr;
+    utf8str = outstr;
+    return true;
 }
 
 bool isBinary(const std::string &str) {

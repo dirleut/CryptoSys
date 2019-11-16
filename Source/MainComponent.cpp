@@ -109,116 +109,112 @@ void MainComponent::keyGen() {
 }
 
 void MainComponent::encryptTextSection() {
-    std::string toEncode(textSection.getTextValue().toString().toStdString());
-    std::string bitstr;
+    std::string chars(textSection.getTextValue().toString().toStdString());
     switch (curToggleState) {
         // TODO ошибки
         case Hex:
-            bitstr = hexToBinary(toEncode);
+            hexToBinary(chars);
             break;
         case UTF8:
-            bitstr = UTF8ToBinary(toEncode);
+            UTF8ToBinary(chars);
             break;
         case Binary:
-            bitstr = toEncode;
             break;
         default:
             break;
     }
-    std::cout << bitstr << std::endl;
-    BigInteger T = fromBinString(bitstr);
-    keyToApply.applyToValue(T);
-    //T = modulo(T, keyToApply.part1, keyToApply.part2);
-    bitstr = fromBigInt(T);
-    std::cout << bitstr << std::endl;
-    std::cout << std::endl;
 
-    std::string outstr;
+    BigInteger T = fromBinString(chars);
+    keyToApply.applyToValue(T);
+    chars = fromBigInt(T);
+
     switch (curToggleState) {
         case Hex:
-            outstr = binaryToHex(bitstr);
+            binaryToHex(chars);
             break;
         case UTF8:
-            outstr = binaryToUTF8(bitstr);
+            if(!binaryToUTF8(chars)) {
+                chars = "Error decoding to UTF-8";
+            }
             break;
         case Binary:
-            outstr = bitstr;
             break;
         default:
             // TODO ошибки
             break;
     }
-    textSection.setText(String(outstr));
+    textSection.setText(String(chars));
 }
 
 void MainComponent::decodeToBinary() {
     if (curToggleState == Binary) {
         return;
     }
-    std::string toEncode(textSection.getTextValue().toString().toStdString());
-    std::string encoded;
+    std::string chars(textSection.getTextValue().toString().toStdString());
     switch (curToggleState) {
         case Hex:
-            if(isHex(toEncode)){
-                 encoded = hexToBinary(toEncode);
+            if(isHex(chars)){
+                 hexToBinary(chars);
             }
             break;
         case UTF8:
-            encoded = UTF8ToBinary(toEncode);
+            UTF8ToBinary(chars);
             break;
         default:
             break;
     }
     curToggleState = Binary;
-    textSection.setText(String(encoded));
+    textSection.setText(String(chars));
 }
 
 void MainComponent::decodeToHex() {
     if (curToggleState == Hex) {
         return;
     }
-    std::string toEncode(textSection.getTextValue().toString().toStdString());
-    std::string encoded;
+    std::string chars(textSection.getTextValue().toString().toStdString());
     switch (curToggleState) {
         case Binary:
-            if(isBinary(toEncode)){
-                 encoded = binaryToHex(toEncode);
+            if(isBinary(chars)){
+                 binaryToHex(chars);
             }
             break;
         case UTF8:
-            toEncode = UTF8ToBinary(toEncode);
-            encoded = binaryToHex(toEncode);
+            UTF8ToBinary(chars);
+            binaryToHex(chars);
             break;
         default:
             break;
     }
     curToggleState = Hex;
-    textSection.setText(String(encoded));
+    textSection.setText(String(chars));
 }
 
 void MainComponent::decodeToUTF8() {
     if (curToggleState == UTF8) {
         return;
     }
-    std::string toEncode(textSection.getTextValue().toString().toStdString());
-    std::string encoded;
+    std::string chars(textSection.getTextValue().toString().toStdString());
     switch (curToggleState) {
         case Binary:
-            if(isBinary(toEncode)){
-                encoded = binaryToUTF8(toEncode);
+            if(isBinary(chars)) {
+                if(!binaryToUTF8(chars)) {
+                    chars = "Error decoding to UTF-8";
+                }
             }
             break;
         case Hex:
-            if(isHex(toEncode)){
-                toEncode = hexToBinary(toEncode);
-                encoded = binaryToUTF8(toEncode);
+            if(isHex(chars)) {
+                hexToBinary(chars);
+                if(!binaryToUTF8(chars)) {
+                    chars = "Error decoding to UTF-8";
+                }
             }
             break;
         default:
             break;
     }
     curToggleState = UTF8;
-    textSection.setText(String(encoded));
+    textSection.setText(String(chars));
 }
 
 void MainComponent::createNamedLabel(Label *main, Label *attached, const String &text, Justification justification, Colour textColour, Colour backgroundColour) {
