@@ -1,25 +1,13 @@
 /*
   ==============================================================================
 
-    utils.cpp
+    encoding.cpp
     Created: 4 Nov 2019 11:51:03am
     Author:  Кирилл Фокин
 
   ==============================================================================
 */
-#include "utils.h"
-
-BigInteger modulo(BigInteger base, BigInteger exp, BigInteger modulus) {
-    BigInteger x=1, y = base;
-    while (exp > 0) {
-        if (exp % 2 == 1) {
-            x = (x*y) % modulus; // multiplying with base
-        }
-        y = (y*y) % modulus; // squaring the base
-        exp /= 2;
-    }
-    return x % modulus;
-}
+#include "encoding.h"
 
 const char* _hexCharToBin(char c) {
     switch(toupper(c))
@@ -150,23 +138,5 @@ bool isBinary(const std::string &str) {
 bool isHex(const std::string &str) {
   return str.size() > 0 &&
     str.find_first_not_of("0123456789abcdefABCDEF", 0) == std::string::npos;
-}
-
-BigInteger fromBinString(const std::string &binstr) {
-    BigInteger bn;
-    for(int i = 0; i < binstr.size() ; ++i) {
-        if(binstr[i] == '1'){
-            bn.setBit(binstr.size() - 1 - i);
-        }
-    }
-    return bn;
-}
-
-std::string fromBigInt(const BigInteger &bn) {
-    std::string binstr;
-    for(int i = bn.getHighestBit(); i >=0 ; --i){
-        binstr += (bn[i]) ? '1' : '0';
-    }
-    return binstr;
 }
 

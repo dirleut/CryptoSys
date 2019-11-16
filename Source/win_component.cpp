@@ -1,5 +1,6 @@
-#include "MainComponent.h"
-#include "utils.h"
+#include "win_component.h"
+#include "encoding.h"
+#include "bignumber.h"
 
 MainComponent::MainComponent()
 {

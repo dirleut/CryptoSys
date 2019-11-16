@@ -1,6 +1,6 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
-#include "MainComponent.h"
+#include "win_component.h"
 
 class CryptoSysApplication  : public JUCEApplication
 {
