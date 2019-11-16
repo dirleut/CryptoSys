@@ -22,7 +22,6 @@ MainComponent();
     void buttonClicked(Button* clickedButton) override;
 
     void keyGen();
-    void applyKey(const std::string &block);
     void encryptTextSection();
     
     void decodeToBinary();

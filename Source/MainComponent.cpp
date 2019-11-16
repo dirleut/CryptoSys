@@ -1,12 +1,10 @@
 #include "MainComponent.h"
 #include "utils.h"
 
-// Почему-то при applyKey можно использовать размер блока = N
-// А при modulo размер блока = N/2
-const int BLOCK_SIZE = 32;
-
 MainComponent::MainComponent()
 {
+    //addChildComponent(headerLabel);
+    //headerLabel.setVisible(true);
     addAndMakeVisible(headerLabel);
     headerLabel.setFont(Font(18.0, Font::bold));
     headerLabel.setText("[ RSA ]", dontSendNotification);
@@ -101,23 +99,13 @@ void MainComponent::paint (Graphics& g)
     //g.drawText ("[ RSA ]", getLocalBounds(), Justification::centredTop, true);
 }
 
-// Мусор
-void MainComponent::buttonClicked(Button *clickedButton) {
-    if(clickedButton == &keysGenerateButton){
-        headerLabel.setText("keys", dontSendNotification);
-    }
-}
+// Зачем-то нужна
+void MainComponent::buttonClicked(Button *clickedButton) {}
 
 void MainComponent::keyGen() {
     RSAKey::createKeyPair(publicKey, privateKey, keyLength);
     privateKeySection.setText(privateKey.toString(), dontSendNotification);
     publicKeySection.setText(publicKey.toString(), dontSendNotification);
-}
-
-void MainComponent::applyKey(const std::string &block) {
-    // TODO проверка на int64
-    BigInteger T;
-    keyToApply.applyToValue(T);
 }
 
 void MainComponent::encryptTextSection() {
@@ -140,8 +128,10 @@ void MainComponent::encryptTextSection() {
     std::cout << bitstr << std::endl;
     BigInteger T = fromBinString(bitstr);
     keyToApply.applyToValue(T);
+    //T = modulo(T, keyToApply.part1, keyToApply.part2);
     bitstr = fromBigInt(T);
     std::cout << bitstr << std::endl;
+    std::cout << std::endl;
 
     std::string outstr;
     switch (curToggleState) {
