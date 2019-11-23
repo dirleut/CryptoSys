@@ -1,6 +1,7 @@
 #include "win_component.h"
 #include "encoding.h"
 #include "bignumber.h"
+#include "PopUp.h"
 
 MainComponent::MainComponent()
 {
@@ -16,7 +17,6 @@ MainComponent::MainComponent()
     
     createNamedLabel(&inputKeyLength, &inputKeyLengthDesc, CharPointer_UTF8("Длина ключа"), Justification::right, Colours::white, Colour::fromHSV(darkPurple, 0.5, 0.3, 1.0));
     inputKeyLength.setText(String(keyLength), dontSendNotification);
-    // TODO проверка на правильность длины
     inputKeyLength.onTextChange = [this] {
         keyLength = inputKeyLength.getTextValue().toString().getIntValue();
     };
@@ -24,6 +24,10 @@ MainComponent::MainComponent()
     addAndMakeVisible(keysGenerateButton);
     keysGenerateButton.setButtonText(CharPointer_UTF8("Сгенерировать ключи"));
     keysGenerateButton.onClick = [this] {
+        if (keyLength > 2048 || keyLength < 17){
+            showMessage("Длина ключа должна быть в диапазоне от 17 до 2048", "Ошибка");
+            return;
+        }
         keyGen();
     };
 //===================================================================================================
@@ -33,15 +37,25 @@ MainComponent::MainComponent()
     createNamedLabel(&publicKeySection, &publicKeySectionDesc, CharPointer_UTF8("Открытый ключ"), Justification::right, Colours::white, Colour::fromHSV(darkPurple, 0.5, 0.3, 1.0));
     publicKeySection.onTextChange = [this]{};
 //===================================================================================================
-    createNamedLabel(&keySection, &keySectionDesc, CharPointer_UTF8("Ключ"), Justification::right, Colours::white, Colour::fromHSV(darkPurple, 0.5, 0.3, 1.0));
-    keySection.onTextChange = [this]{
-        // TODO проверить ключ на правильность
-        keyToApply = RSAKey(keySection.getTextValue().toString());
+    createNamedLabel(&keySection, &keySectionDesc, CharPointer_UTF8("Ключ"), Justification::right,
+                     Colours::white, Colour::fromHSV(darkPurple, 0.5, 0.3, 1.0));
+    keySection.onTextChange = [this] {
+        keyToApply = RSAKey();
+        String checkKey = keySection.getTextValue().toString();
+        if (!checkKey.containsChar (',')) {
+            showMessage("Неправильный формат ключа", "Ошибка");
+            return;
+        }
+        keyToApply = RSAKey(checkKey);
     };
 //===================================================================================================
     addAndMakeVisible(keyEncrypt);
     keyEncrypt.setButtonText(CharPointer_UTF8("Применить ключ"));
     keyEncrypt.onClick = [this] {
+        if (textSection.getTextValue().toString().toStdString() == "") {
+            showMessage("Секция текста пуста", "Ошибка");
+            return;
+        }
         encryptTextSection();
     };
 //===================================================================================================
@@ -51,6 +65,7 @@ MainComponent::MainComponent()
     addAndMakeVisible(binEncodingButton);
     addAndMakeVisible(hexEncodingButton);
     addAndMakeVisible(utf8EncodingButton);
+
     utf8EncodingButton.setToggleState(true, dontSendNotification);
     curToggleState = UTF8;
 
@@ -110,9 +125,12 @@ void MainComponent::keyGen() {
 }
 
 void MainComponent::encryptTextSection() {
+    if (!keyToApply.isValid()) {
+        showMessage("Некорректный ключ", "Ошибка");
+        return;
+    }
     std::string chars(textSection.getTextValue().toString().toStdString());
     switch (curToggleState) {
-        // TODO ошибки
         case Hex:
             hexToBinary(chars);
             break;
@@ -135,13 +153,13 @@ void MainComponent::encryptTextSection() {
             break;
         case UTF8:
             if(!binaryToUTF8(chars)) {
-                chars = "Error decoding to UTF-8";
+                showMessage("Невозможно закодировать в UTF-8", "Ошибка");
+                return;
             }
             break;
         case Binary:
             break;
         default:
-            // TODO ошибки
             break;
     }
     textSection.setText(String(chars));
@@ -154,8 +172,11 @@ void MainComponent::decodeToBinary() {
     std::string chars(textSection.getTextValue().toString().toStdString());
     switch (curToggleState) {
         case Hex:
-            if(isHex(chars)){
-                 hexToBinary(chars);
+            if (!hexToBinary(chars)) {
+                binEncodingButton.setToggleState(false, dontSendNotification);
+                hexEncodingButton.setToggleState(true, dontSendNotification);
+                showMessage("Данные представлены не в\nшестнадцатиричной кодировке", "Ошибка");
+                return;
             }
             break;
         case UTF8:
@@ -175,8 +196,11 @@ void MainComponent::decodeToHex() {
     std::string chars(textSection.getTextValue().toString().toStdString());
     switch (curToggleState) {
         case Binary:
-            if(isBinary(chars)){
-                 binaryToHex(chars);
+            if (!binaryToHex(chars)) {
+                hexEncodingButton.setToggleState(false, dontSendNotification);
+                binEncodingButton.setToggleState(true, dontSendNotification);
+                showMessage("Данные представлены не в\nдвоичной кодировке", "Ошибка");
+                return;
             }
             break;
         case UTF8:
@@ -197,18 +221,31 @@ void MainComponent::decodeToUTF8() {
     std::string chars(textSection.getTextValue().toString().toStdString());
     switch (curToggleState) {
         case Binary:
-            if(isBinary(chars)) {
-                if(!binaryToUTF8(chars)) {
-                    chars = "Error decoding to UTF-8";
-                }
+            if(!isBinary(chars)) {
+                hexEncodingButton.setToggleState(false, dontSendNotification);
+                binEncodingButton.setToggleState(true, dontSendNotification);
+                showMessage("Данные представлены не в\nдвоичной кодировке", "Ошибка");
+                return;
+            }
+            if(!binaryToUTF8(chars)) {
+                utf8EncodingButton.setToggleState(false, dontSendNotification);
+                binEncodingButton.setToggleState(true, dontSendNotification);
+                showMessage("Невозможно закодировать в UTF-8", "Ошибка");
+                return;
             }
             break;
         case Hex:
-            if(isHex(chars)) {
-                hexToBinary(chars);
-                if(!binaryToUTF8(chars)) {
-                    chars = "Error decoding to UTF-8";
-                }
+            if (!hexToBinary(chars)) {
+                utf8EncodingButton.setToggleState(false, dontSendNotification);
+                hexEncodingButton.setToggleState(true, dontSendNotification);
+                showMessage("Данные представлены не в\nшестнадцатиричной кодировке", "Ошибка");
+                return;
+            }
+            if(!binaryToUTF8(chars)) {
+                utf8EncodingButton.setToggleState(false, dontSendNotification);
+                hexEncodingButton.setToggleState(true, dontSendNotification);
+                showMessage("Невозможно закодировать в UTF-8", "Ошибка");
+                return;
             }
             break;
         default:
@@ -229,6 +266,12 @@ void MainComponent::createNamedLabel(Label *main, Label *attached, const String 
     main->setEditable(true);
     main->setColour(Label::backgroundColourId, backgroundColour);
     main->onTextChange = [this]{};
+}
+
+void MainComponent::showMessage(const std::string &message, const std::string &header) {
+    PopUp* dialog = new PopUp(message);
+    DialogWindow::showModalDialog(header, dialog, this, Colours::grey, true);
+    delete dialog;
 }
 
 void MainComponent::resized()

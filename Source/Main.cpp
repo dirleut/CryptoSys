@@ -7,33 +7,32 @@ class CryptoSysApplication  : public JUCEApplication
 public:
     CryptoSysApplication() {}
 
-    const String getApplicationName() override       { return ProjectInfo::projectName; }
-    const String getApplicationVersion() override    { return ProjectInfo::versionString; }
-    bool moreThanOneInstanceAllowed() override       { return true; }
+    const String getApplicationName() override {
+        return ProjectInfo::projectName;
+    }
 
-    void initialise (const String& commandLine) override
-    {
+    const String getApplicationVersion() override {
+        return ProjectInfo::versionString;
+    }
+
+    bool moreThanOneInstanceAllowed() override {
+        return true;
+    }
+
+    void initialise (const String& commandLine) override {
         mainWindow.reset (new MainWindow (getApplicationName()));
     }
 
-    void shutdown() override
-    {
+    void shutdown() override {
         mainWindow = nullptr;
     }
 
-    void systemRequestedQuit() override
-    {
-        // This is called when the app is being asked to quit: you can ignore this
-        // request and let the app carry on running, or call quit() to allow the app to close.
+    void systemRequestedQuit() override {
         quit();
     }
 
     void anotherInstanceStarted (const String& commandLine) override
-    {
-        // When another instance of the app is launched while this one is running,
-        // this method is invoked, and the commandLine parameter tells you what
-        // the other instance's command-line arguments were.
-    }
+    {}
 
     class MainWindow : public DocumentWindow
     {
@@ -53,8 +52,7 @@ public:
         setVisible (true);
     }
 
-    void closeButtonPressed() override
-        {
+    void closeButtonPressed() override {
             // This is called when the user tries to close this window. Here, we'll just
             // ask the app to quit when this happens, but you can change this to do
             // whatever you need.

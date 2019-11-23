@@ -33,6 +33,9 @@ const char* _hexCharToBin(char c) {
 }
 
 bool binaryToHex(std::string &str) {
+    if (!isBinary(str)) {
+        return false;
+    }
     std::string bitstr = str;
     // TODO обработка ошибок
     if(bitstr.size() % 4 != 0) {
@@ -58,6 +61,9 @@ bool binaryToHex(std::string &str) {
 }
 
 bool hexToBinary(std::string &hexstr) {
+    if (!isHex(hexstr)) {
+        return false;
+    }
     std::string bin;
     for(unsigned i = 0; i != hexstr.length(); ++i)
        bin += _hexCharToBin(hexstr[i]);
@@ -81,6 +87,9 @@ bool _checkAndAddNextUTF8Bytes(std::stringstream &ss, std::string &symb, int n) 
 }
 
 bool binaryToUTF8(std::string &bitstr) {
+    if (!isBinary(bitstr)) {
+        return false;
+    }
     std::stringstream ss(bitstr);
     std::string outstr;
 

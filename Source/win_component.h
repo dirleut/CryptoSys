@@ -14,7 +14,7 @@ class MainComponent : public Component, public Button::Listener
 {
 public:
     
-MainComponent();
+    MainComponent();
     ~MainComponent();
 
     void paint(Graphics&) override;
@@ -29,7 +29,7 @@ MainComponent();
     void decodeToUTF8();
 
     void createNamedLabel(Label *main, Label *attached, const String &text, Justification justification, Colour textColour, Colour backgroundColour);
-    void updateToggleState (Button* button, String name);
+    void showMessage(const std::string &message, const std::string &header);
 
 private:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainComponent)
@@ -53,7 +53,7 @@ private:
     int keyLength = 64;
     RSAKey privateKey;
     RSAKey publicKey;
-    RSAKey keyToApply;
+    RSAKey keyToApply = RSAKey();
     
     Label encodingLabel { {}, CharPointer_UTF8("Кодировка")};
     ToggleButton binEncodingButton { CharPointer_UTF8("Двоичная") };
@@ -63,4 +63,6 @@ private:
     enum RadioButtonIds { GenderButtons = 1 };
     enum ToggleStates { Binary, Hex, UTF8 };
     ToggleStates curToggleState;
+
+    DialogWindow::LaunchOptions dia;
 };
