@@ -1,7 +1,7 @@
 #include "win_component.h"
-#include "encoding.h"
-#include "bignumber.h"
-#include "PopUp.h"
+#include "lib/encoding.h"
+#include "lib/bignumber.h"
+#include "lib/popup.h"
 
 MainComponent::MainComponent()
 {
