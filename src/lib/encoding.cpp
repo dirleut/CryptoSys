@@ -8,6 +8,7 @@
   ==============================================================================
 */
 #include "encoding.h"
+#include <bitset>
 
 const char* _hexCharToBin(char c) {
     switch(toupper(c))
