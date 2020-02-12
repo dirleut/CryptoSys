@@ -3,10 +3,10 @@
 #include "lib/bignumber.h"
 #include "lib/popup.h"
 
+const unsigned TEXT_BYTE_SIZE = 4000;
+
 MainComponent::MainComponent()
 {
-    //addChildComponent(headerLabel);
-    //headerLabel.setVisible(true);
     addAndMakeVisible(headerLabel);
     headerLabel.setFont(Font(18.0, Font::bold));
     headerLabel.setText("[ RSA ]", dontSendNotification);
@@ -40,7 +40,6 @@ MainComponent::MainComponent()
     createNamedLabel(&keySection, &keySectionDesc, CharPointer_UTF8("Ключ"), Justification::right,
                      Colours::white, Colour::fromHSV(darkPurple, 0.5, 0.3, 1.0));
     keySection.onTextChange = [this] {
-        keyToApply = RSAKey();
         String checkKey = keySection.getTextValue().toString();
         if (!checkKey.containsChar (',')) {
             showMessage("Неправильный формат ключа", "Ошибка");
@@ -48,6 +47,10 @@ MainComponent::MainComponent()
         }
         keyToApply = RSAKey(checkKey);
     };
+
+    createNamedLabel(&messageHash, &messageHashDesc, CharPointer_UTF8("MD5 сообщения"), Justification::right,
+                     Colours::white, Colour::fromHSV(darkPurple, 0.5, 0.3, 1.0));
+
 //===================================================================================================
     addAndMakeVisible(keyEncrypt);
     keyEncrypt.setButtonText(CharPointer_UTF8("Применить ключ"));
@@ -57,6 +60,12 @@ MainComponent::MainComponent()
             return;
         }
         encryptTextSection();
+    };
+
+    addAndMakeVisible(keyHash);
+    keyHash.setButtonText(CharPointer_UTF8("Посчитать MD5 от сообщения"));
+    keyHash.onClick = [this] {
+        showTextHash();
     };
 //===================================================================================================
     addAndMakeVisible(encodingLabel);
@@ -88,14 +97,21 @@ MainComponent::MainComponent()
     textSection.setScrollbarsShown(true);
     textSection.setMultiLine(true);
     textSection.setText(CharPointer_UTF8("Введите текст для шифрования..."));
+    textSection.onTextChange = [this] {
+        if (textSection.getTextValue().toString().length() >= TEXT_BYTE_SIZE / 8) {
+            showMessage("Размер текста слишком большой", "Ошибка");
+            textSection.clear();
+        }
+    };
 
-    setSize (800, 450);
+    setSize (800, 550);
 }
 //===================================================================================================
 MainComponent::~MainComponent()
 {
     keysGenerateButton.removeListener(this);
     keyEncrypt.removeListener(this);
+    keyHash.removeListener(this);
     binEncodingButton.removeListener(this);
     hexEncodingButton.removeListener(this);
     utf8EncodingButton.removeListener(this);
@@ -163,6 +179,44 @@ void MainComponent::encryptTextSection() {
             break;
     }
     textSection.setText(String(chars));
+}
+
+void MainComponent::showTextHash() {
+    std::string chars(textSection.getTextValue().toString().toStdString());
+    if (chars.empty()) {
+        showMessage("Пустое сообщение", "Ошибка");
+        return;
+    }
+    switch (curToggleState) {
+        case Binary:
+            if (!isBinary(chars)) {
+                showMessage("Не удалось взять хэш от сообщения", "Ошибка");
+                return;
+            }
+            break;
+        case Hex:
+            if (!hexToBinary(chars)) {
+                showMessage("Не удалось взять хэш от сообщения", "Ошибка");
+                return;
+            }
+            break;
+        case UTF8:
+            UTF8ToBinary(chars);
+            break;
+        default:
+            break;
+    }
+
+    uint8_t data[TEXT_BYTE_SIZE] = {0};
+    std::stringstream ss(chars);
+    int i = 0;
+    std::bitset<8> byte;
+    while (ss >> byte) {
+        data[i++] = byte.to_ulong();
+    }
+
+    MD5 md5(&data, TEXT_BYTE_SIZE / 8);
+    messageHash.setText(md5.toHexString(), dontSendNotification);
 }
 
 void MainComponent::decodeToBinary() {
@@ -286,10 +340,13 @@ void MainComponent::resized()
     keySection.setBounds(180, 170, getWidth() - 250 , 25);
     keyEncrypt.setBounds (180, 200, 200, 25);
     
+    messageHash.setBounds(245, 230, getWidth() - 315 , 25);
+    keyHash.setBounds(180, 260, 200, 25);
+
     encodingLabel.setBounds(20, 150, 100, 20);
     binEncodingButton.setBounds(20, 170, 100, 20);
     hexEncodingButton.setBounds(20, 190, 150, 20);
     utf8EncodingButton.setBounds(20, 210, 100, 20);
 
-    textSection.setBounds(10, 240, getWidth() - 20, getHeight() - 250);
+    textSection.setBounds(10, 300, getWidth() - 20, getHeight() - 310);
 }

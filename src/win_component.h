@@ -5,11 +5,6 @@
 #include <bitset>
 #include "../JuceLibraryCode/JuceHeader.h"
 
-//==============================================================================
-/*
-    This component lives inside our window, and this is where you should put all
-    your controls and content.
-*/
 class MainComponent : public Component, public Button::Listener
 {
 public:
@@ -23,6 +18,7 @@ public:
 
     void keyGen();
     void encryptTextSection();
+    void showTextHash();
     
     void decodeToBinary();
     void decodeToHex();
@@ -35,6 +31,7 @@ private:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainComponent)
     TextButton keysGenerateButton;
     TextButton keyEncrypt;
+    TextButton keyHash;
 
     Label headerLabel;
     Label inputKeyLength;
@@ -48,6 +45,9 @@ private:
     Label keySection;
     Label keySectionDesc;
     
+    Label messageHash;
+    Label messageHashDesc;
+
     TextEditor textSection;
 
     int keyLength = 64;
