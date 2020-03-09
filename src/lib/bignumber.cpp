@@ -1,14 +1,5 @@
-/*
-  ==============================================================================
-
-    bignumber.cpp
-    Created: 16 Nov 2019 11:09:19pm
-
-  ==============================================================================
-*/
-
-#include "bignumber.h"
-
+#include "Bignumber.h"
+// TODO написать тесты
 BigInteger modulo(BigInteger base, BigInteger exp, BigInteger modulus) {
     BigInteger x=1, y = base;
     while (exp > 0) {

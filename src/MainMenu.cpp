@@ -1,7 +1,8 @@
-#include "main_menu.h"
-#include "sections/sym_win.h"
-#include "sections/asym_win.h"
-
+#include "MainMenu.h"
+#include "sections/SymWindow.h"
+#include "sections/AsymWindow.h"
+// TODO подписать нормальным языком
+// TODO разгрузить конструктор
 MainMenu::MainMenu ()
 {
     _sym_section_button.reset (new TextButton ("new button"));

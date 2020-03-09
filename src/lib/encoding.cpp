@@ -1,15 +1,8 @@
-/*
-  ==============================================================================
-
-    encoding.cpp
-    Created: 4 Nov 2019 11:51:03am
-
-  ==============================================================================
-*/
-#include "encoding.h"
+// TODO написать тесты
+#include "Encoding.h"
 #include <bitset>
 
-const char* _hexCharToBin(char c) {
+static const char* _hexCharToBin(char c) {
     switch(toupper(c))
     {
         case '0': return "0000";
@@ -71,7 +64,7 @@ bool hexToBinary(std::string &hexstr) {
     return true;
 }
 
-bool _checkAndAddNextUTF8Bytes(std::stringstream &ss, std::string &symb, int n) {
+static bool _checkAndAddNextUTF8Bytes(std::stringstream &ss, std::string &symb, int n) {
     std::string result;
     for(int i = 0; i < n; ++i) {
         std::bitset<8> nextByte;

@@ -1,6 +1,6 @@
-
+// TODO избавиться от лишнего
 #include "../JuceLibraryCode/JuceHeader.h"
-#include "main_menu.h"
+#include "MainMenu.h"
 
 class CryptoSysApplication  : public JUCEApplication
 {
