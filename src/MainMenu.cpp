@@ -1,7 +1,6 @@
 #include "MainMenu.h"
 #include "sections/SymWindow.h"
 #include "sections/AsymWindow.h"
-// TODO подписать нормальным языком
 // TODO разгрузить конструктор
 MainMenu::MainMenu ()
 {
@@ -45,8 +44,8 @@ void MainMenu::resized()
 {
     // TODO подписать эти числа чтобы не были магическими
     _info_button->setBounds(getWidth() / 2 - 75 , getHeight() / 2 - 12 - 30, 150, 24);
-    _sym_section_button->setBounds(getWidth() / 2 - 200 , getHeight() / 2 - 12, 183, 24);
-    _asym_section_button->setBounds(getWidth() / 2 + 10, getHeight() / 2 - 12, 183, 24);
+    _sym_section_button->setBounds(getWidth() / 2 - 200 , getHeight() / 2 - 12, 184, 24);
+    _asym_section_button->setBounds(getWidth() / 2 + 10, getHeight() / 2 - 12, 184, 24);
     _lfsr_section_button->setBounds(getWidth() / 2 - 92 , getHeight() / 2 - 12 + 30, 184, 24);
 }
 

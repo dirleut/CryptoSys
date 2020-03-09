@@ -1,6 +1,5 @@
 #pragma once
 #include <JuceHeader.h>
-// TODO подписать нормальным языком
 // TODO разгрузить конструктор
 class SymWindow  : public Component,
                    public Button::Listener
@@ -12,8 +11,6 @@ public:
     void paint (Graphics& g) override;
     void resized() override;
     void buttonClicked (Button* buttonThatWasClicked) override;
-
-
 
 private:
     std::unique_ptr<TextButton> _encrypt_button;
