@@ -1,160 +1,148 @@
 
 #include "SymWindow.h"
 
-SymWindow::SymWindow ()
+SymWindow::SymWindow()
 {
+    _encrypt_button.reset(new TextButton("New button"));
+    addAndMakeVisible(_encrypt_button.get());
+    _encrypt_button->setButtonText(CharPointer_UTF8("Зашифровать"));
+    _encrypt_button->addListener(this);
+    _encrypt_button->setColour(TextButton::buttonColourId, Colour(0xff2fad2f));
 
-    newButton.reset (new TextButton ("New button"));
-    addAndMakeVisible (newButton.get());
-    newButton->setButtonText (CharPointer_UTF8 ("\xd0\x97\xd0\xb0\xd1\x88\xd0\xb8\xd1\x84\xd1\x80\xd0\xbe\xd0\xb2\xd0\xb0\xd1\x82\xd1\x8c"));
-    newButton->addListener (this);
-    newButton->setColour (TextButton::buttonColourId, Colour (0xff2fad2f));
+    _encrypt_button->setBounds(128, 208, 150, 24);
 
-    newButton->setBounds (128, 208, 150, 24);
+    _init_text_block.reset(new TextEditor("new text editor"));
+    addAndMakeVisible(_init_text_block.get());
+    _init_text_block->setScrollbarsShown(true);
+    _init_text_block->setCaretVisible(true);
+    _init_text_block->setPopupMenuEnabled(true);
 
-    textEditor.reset (new TextEditor ("new text editor"));
-    addAndMakeVisible (textEditor.get());
-    textEditor->setMultiLine (false);
-    textEditor->setReturnKeyStartsNewLine (false);
-    textEditor->setReadOnly (false);
-    textEditor->setScrollbarsShown (true);
-    textEditor->setCaretVisible (true);
-    textEditor->setPopupMenuEnabled (true);
-    textEditor->setText (String());
+    _init_text_block->setBounds(171, 71, 320, 80);
 
-    textEditor->setBounds (171, 71, 320, 80);
+    _init_text_desc.reset(new Label("new label", CharPointer_UTF8("Исходные данные")));
+    addAndMakeVisible(_init_text_desc.get());
+    _init_text_desc->setJustificationType(Justification::centredRight);
+    _init_text_desc->setEditable(false, false, false);
+    _init_text_desc->setColour(TextEditor::textColourId, Colours::black);
+    _init_text_desc->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
-    label.reset (new Label ("new label",
-                            CharPointer_UTF8 ("\xd0\x9e\xd1\x82\xd0\xba\xd1\x80\xd1\x8b\xd1\x82\xd1\x8b\xd0\xb9 \xd1\x82\xd0\xb5\xd0\xba\xd1\x81\xd1\x82/\n"
-                            "\xd0\x97\xd0\xb0\xd1\x88\xd0\xb8\xd1\x84\xd1\x80\xd0\xbe\xd0\xb2\xd0\xb0\xd0\xbd\xd0\xbd\xd1\x8b\xd0\xb9 \xd1\x82\xd0\xb5\xd0\xba\xd1\x81\xd1\x82")));
-    addAndMakeVisible (label.get());
-    label->setFont (Font ("Georgia", 16.00f, Font::plain).withTypefaceStyle ("Regular"));
-    label->setJustificationType (Justification::centredRight);
-    label->setEditable (false, false, false);
-    label->setColour (TextEditor::textColourId, Colours::black);
-    label->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    _init_text_desc->setBounds(-29, 79, 200, 56);
 
-    label->setBounds (-29, 79, 200, 56);
+    _key_field_desc.reset(new Label("new label", CharPointer_UTF8("Ключ")));
+    addAndMakeVisible(_key_field_desc.get());
+    _key_field_desc->setJustificationType(Justification::centredLeft);
+    _key_field_desc->setEditable(false, false, false);
+    _key_field_desc->setColour(TextEditor::textColourId, Colours::black);
+    _key_field_desc->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
-    label3.reset (new Label ("new label",
-                             CharPointer_UTF8 ("\xd0\x9a\xd0\xbb\xd1\x8e\xd1\x87 ")));
-    addAndMakeVisible (label3.get());
-    label3->setFont (Font ("Georgia", 16.00f, Font::plain).withTypefaceStyle ("Regular"));
-    label3->setJustificationType (Justification::centredLeft);
-    label3->setEditable (false, false, false);
-    label3->setColour (TextEditor::textColourId, Colours::black);
-    label3->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    _key_field_desc->setBounds(120, 160, 168, 19);
 
-    label3->setBounds (120, 160, 168, 19);
+    _key_input_field.reset(new TextEditor("new text editor"));
+    addAndMakeVisible(_key_input_field.get());
+    _key_input_field->setMultiLine(false);
+    _key_input_field->setReturnKeyStartsNewLine(false);
+    _key_input_field->setReadOnly(false);
+    _key_input_field->setScrollbarsShown(true);
+    _key_input_field->setCaretVisible(true);
+    _key_input_field->setPopupMenuEnabled(true);
+    _key_input_field->setText(String());
 
-    textEditor2.reset (new TextEditor ("new text editor"));
-    addAndMakeVisible (textEditor2.get());
-    textEditor2->setMultiLine (false);
-    textEditor2->setReturnKeyStartsNewLine (false);
-    textEditor2->setReadOnly (false);
-    textEditor2->setScrollbarsShown (true);
-    textEditor2->setCaretVisible (true);
-    textEditor2->setPopupMenuEnabled (true);
-    textEditor2->setText (String());
+    _key_input_field->setBounds(171, 159, 184, 24);
 
-    textEditor2->setBounds (171, 159, 184, 24);
+    _result_text_desc.reset(new Label("new label", CharPointer_UTF8("Результат")));
+    addAndMakeVisible(_result_text_desc.get());
+    _result_text_desc->setJustificationType(Justification::centredRight);
+    _result_text_desc->setEditable(false, false, false);
+    _result_text_desc->setColour(TextEditor::textColourId, Colours::black);
+    _result_text_desc->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
-    label4.reset (new Label ("new label",
-                             CharPointer_UTF8 ("\xd0\xa0\xd0\xb5\xd0\xb7\xd1\x83\xd0\xbb\xd1\x8c\xd1\x82\xd0\xb0\xd1\x82")));
-    addAndMakeVisible (label4.get());
-    label4->setFont (Font ("Georgia", 16.00f, Font::plain).withTypefaceStyle ("Regular"));
-    label4->setJustificationType (Justification::centredRight);
-    label4->setEditable (false, false, false);
-    label4->setColour (TextEditor::textColourId, Colours::black);
-    label4->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    _result_text_desc->setBounds(48, 272, 120, 40);
 
-    label4->setBounds (48, 272, 120, 40);
+    _result_text_block.reset(new TextEditor("new text editor"));
+    addAndMakeVisible(_result_text_block.get());
+    _result_text_block->setMultiLine(false);
+    _result_text_block->setReturnKeyStartsNewLine(false);
+    _result_text_block->setReadOnly(false);
+    _result_text_block->setScrollbarsShown(true);
+    _result_text_block->setCaretVisible(true);
+    _result_text_block->setPopupMenuEnabled(true);
+    _result_text_block->setText(String());
 
-    textEditor3.reset (new TextEditor ("new text editor"));
-    addAndMakeVisible (textEditor3.get());
-    textEditor3->setMultiLine (false);
-    textEditor3->setReturnKeyStartsNewLine (false);
-    textEditor3->setReadOnly (false);
-    textEditor3->setScrollbarsShown (true);
-    textEditor3->setCaretVisible (true);
-    textEditor3->setPopupMenuEnabled (true);
-    textEditor3->setText (String());
+    _result_text_block->setBounds(168, 256, 320, 80);
 
-    textEditor3->setBounds (168, 256, 320, 80);
+    _ceasar_toggle.reset(new ToggleButton("new toggle button"));
+    addAndMakeVisible(_ceasar_toggle.get());
+    _ceasar_toggle->setButtonText(CharPointer_UTF8("Цезаря"));
+    _ceasar_toggle->addListener(this);
 
-    toggleButton3.reset (new ToggleButton ("new toggle button"));
-    addAndMakeVisible (toggleButton3.get());
-    toggleButton3->setButtonText (CharPointer_UTF8 ("\xd0\xa8\xd0\xb8\xd1\x84\xd1\x80 \xd0\xa6\xd0\xb5\xd0\xb7\xd0\xb0\xd1\x80\xd1\x8f"));
-    toggleButton3->addListener (this);
+    _ceasar_toggle->setBounds(16, 24, 150, 24);
 
-    toggleButton3->setBounds (16, 24, 150, 24);
+    _scytale_toggle.reset(new ToggleButton("new toggle button"));
+    addAndMakeVisible(_scytale_toggle.get());
+    _scytale_toggle->setButtonText(CharPointer_UTF8("Скитала"));
+    _scytale_toggle->addListener(this);
 
-    toggleButton4.reset (new ToggleButton ("new toggle button"));
-    addAndMakeVisible (toggleButton4.get());
-    toggleButton4->setButtonText (CharPointer_UTF8 ("\xd0\xa8\xd0\xb8\xd1\x84\xd1\x80 \xd0\x92\xd0\xb8\xd0\xb6\xd0\xb5\xd0\xbd\xd0\xb5\xd1\x80\xd0\xb0"));
-    toggleButton4->addListener (this);
+    _scytale_toggle->setBounds(400, 24, 150, 24);
 
-    toggleButton4->setBounds (400, 24, 150, 24);
+    _vigenere_toggle.reset(new ToggleButton("new toggle button"));
+    addAndMakeVisible(_vigenere_toggle.get());
+    _vigenere_toggle->setButtonText(CharPointer_UTF8("Вижинера"));
+    _vigenere_toggle->addListener(this);
 
-    toggleButton5.reset (new ToggleButton ("new toggle button"));
-    addAndMakeVisible (toggleButton5.get());
-    toggleButton5->setButtonText (CharPointer_UTF8 ("\xd0\xa8\xd0\xb8\xd1\x84\xd1\x80 \xd0\xa1\xd1\x86\xd0\xb8\xd1\x82\xd0\xb0\xd0\xbb\xd0\xb0"));
-    toggleButton5->addListener (this);
+    _vigenere_toggle->setBounds(200, 24, 150, 24);
 
-    toggleButton5->setBounds (200, 24, 150, 24);
+    _decrypt_button.reset(new TextButton("New button"));
+    addAndMakeVisible(_decrypt_button.get());
+    _decrypt_button->setButtonText(CharPointer_UTF8("Расшифровать"));
+    _decrypt_button->addListener(this);
+    _decrypt_button->setColour(TextButton::buttonColourId, Colour(0xff2fad2f));
 
-    newButton2.reset (new TextButton ("New button"));
-    addAndMakeVisible (newButton2.get());
-    newButton2->setButtonText (CharPointer_UTF8 ("\xd0\xa0\xd0\xb0\xd1\x81\xd1\x88\xd0\xb8\xd1\x84\xd1\x80\xd0\xbe\xd0\xb2\xd0\xb0\xd1\x82\xd1\x8c"));
-    newButton2->addListener (this);
-    newButton2->setColour (TextButton::buttonColourId, Colour (0xff2fad2f));
-
-    newButton2->setBounds (384, 208, 150, 24);
-    setSize (600, 400);
+    _decrypt_button->setBounds(384, 208, 150, 24);
+    setSize(600, 400);
 
 }
 
 SymWindow::~SymWindow()
 {
-    newButton = nullptr;
-    textEditor = nullptr;
-    label = nullptr;
-    label3 = nullptr;
-    textEditor2 = nullptr;
-    label4 = nullptr;
-    textEditor3 = nullptr;
-    toggleButton3 = nullptr;
-    toggleButton4 = nullptr;
-    toggleButton5 = nullptr;
-    newButton2 = nullptr;
+    _encrypt_button = nullptr;
+    _init_text_block = nullptr;
+    _init_text_desc = nullptr;
+    _key_field_desc = nullptr;
+    _key_input_field = nullptr;
+    _result_text_desc = nullptr;
+    _result_text_block = nullptr;
+    _ceasar_toggle = nullptr;
+    _scytale_toggle = nullptr;
+    _vigenere_toggle = nullptr;
+    _decrypt_button = nullptr;
 }
 
 //==============================================================================
-void SymWindow::paint (Graphics& g)
+void SymWindow::paint(Graphics& g)
 {
-    g.fillAll (Colours::green);
+    g.fillAll(Colours::green);
 }
 
 void SymWindow::resized()
 {
 }
 
-void SymWindow::buttonClicked (Button* buttonThatWasClicked)
+void SymWindow::buttonClicked(Button* buttonThatWasClicked)
 {
 
-    if (buttonThatWasClicked == newButton.get())
+    if(buttonThatWasClicked == _encrypt_button.get())
     {
     }
-    else if (buttonThatWasClicked == toggleButton3.get())
+    else if(buttonThatWasClicked == _ceasar_toggle.get())
     {
     }
-    else if (buttonThatWasClicked == toggleButton4.get())
+    else if(buttonThatWasClicked == _scytale_toggle.get())
     {
     }
-    else if (buttonThatWasClicked == toggleButton5.get())
+    else if(buttonThatWasClicked == _vigenere_toggle.get())
     {
     }
-    else if (buttonThatWasClicked == newButton2.get())
+    else if(buttonThatWasClicked == _decrypt_button.get())
     {
     }
 }

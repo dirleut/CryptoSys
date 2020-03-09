@@ -5,24 +5,24 @@
 // TODO разгрузить конструктор
 MainMenu::MainMenu ()
 {
+    _info_button.reset (new TextButton ("new button"));
+    addAndMakeVisible (_info_button.get());
+    _info_button->setButtonText (CharPointer_UTF8 ("Справка"));
+    _info_button->addListener (this);
+
     _sym_section_button.reset (new TextButton ("new button"));
     addAndMakeVisible (_sym_section_button.get());
-    _sym_section_button->setButtonText (CharPointer_UTF8 ("\xd0\xa1\xd0\xb8\xd0\xbc\xd0\xbc\xd0\xb5\xd1\x82\xd1\x80\xd0\xb8\xd1\x87\xd0\xbd\xd0\xb0\xd1\x8f \xd1\x81\xd0\xb5\xd0\xba\xd1\x86\xd0\xb8\xd1\x8f"));
+    _sym_section_button->setButtonText (CharPointer_UTF8 ("Симметричная секция"));
     _sym_section_button->addListener (this);
 
     _asym_section_button.reset (new TextButton ("new button"));
     addAndMakeVisible (_asym_section_button.get());
-    _asym_section_button->setButtonText (CharPointer_UTF8 ("\xd0\x90\xd1\x81\xd0\xb8\xd0\xbc\xd0\xbc\xd0\xb5\xd1\x82\xd1\x80\xd0\xb8\xd1\x87\xd0\xbd\xd0\xb0\xd1\x8f \xd1\x81\xd0\xb5\xd0\xba\xd1\x86\xd0\xb8\xd1\x8f"));
+    _asym_section_button->setButtonText (CharPointer_UTF8 ("Асимметричная секция"));
     _asym_section_button->addListener (this);
-
-    _info_button.reset (new TextButton ("new button"));
-    addAndMakeVisible (_info_button.get());
-    _info_button->setButtonText (CharPointer_UTF8 ("\xd0\xa1\xd0\xbf\xd1\x80\xd0\xb0\xd0\xb2\xd0\xba\xd0\xb0"));
-    _info_button->addListener (this);
 
     _lfsr_section_button.reset (new TextButton ("new button"));
     addAndMakeVisible (_lfsr_section_button.get());
-    _lfsr_section_button->setButtonText (CharPointer_UTF8 ("\xd0\x9b\xd0\xb8\xd0\xbd\xd0\xb5\xd0\xb9\xd0\xbd\xd1\x8b\xd0\xb9 \xd1\x80\xd0\xb5\xd0\xb3\xd0\xb8\xd1\x81\xd1\x82\xd1\x80 \xd1\x81\xd0\xb4\xd0\xb2\xd0\xb8\xd0\xb3\xd0\xb0"));
+    _lfsr_section_button->setButtonText (CharPointer_UTF8 ("Линейный регистр сдвига"));
     _lfsr_section_button->addListener (this);
 
     setSize (500, 300);
