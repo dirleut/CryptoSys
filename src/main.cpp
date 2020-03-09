@@ -1,6 +1,6 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
-#include "win_component.h"
+#include "main_menu.h"
 
 class CryptoSysApplication  : public JUCEApplication
 {
@@ -41,7 +41,7 @@ public:
                                 DocumentWindow::allButtons)
     {
         setUsingNativeTitleBar (true);
-        setContentOwned (new MainComponent(), true);
+        setContentOwned (new MainMenu(), true);
 
 #if JUCE_IOS || JUCE_ANDROID
         setFullScreen (true);
