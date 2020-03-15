@@ -18,6 +18,10 @@ SymWindow::SymWindow()
     _vigenere_toggle->setButtonText(CharPointer_UTF8("Виженера"));
     _vigenere_toggle->addListener(this);
 
+    _ceasar_toggle->setRadioGroupId(CipherSelectionButtons);
+    _scytale_toggle->setRadioGroupId(CipherSelectionButtons);
+    _vigenere_toggle->setRadioGroupId(CipherSelectionButtons);
+
     _init_text_block.reset(new TextEditor());
     addAndMakeVisible(_init_text_block.get());
     _init_text_block->setScrollbarsShown(true);

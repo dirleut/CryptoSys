@@ -76,7 +76,7 @@ AsymWindow::AsymWindow()
     addAndMakeVisible(_utf8_encoding_button);
 
     _utf8_encoding_button.setToggleState(true, dontSendNotification);
-    _cur_toggle_state = UTF8;
+    _selected_encoding = UTF8;
 
     _bin_encoding_button.onClick = [this] {
         decodeToBinary();
@@ -88,9 +88,9 @@ AsymWindow::AsymWindow()
         decodeToUTF8();
     };
 
-    _bin_encoding_button.setRadioGroupId(GenderButtons);
-    _hex_encoding_button.setRadioGroupId(GenderButtons);
-    _utf8_encoding_button.setRadioGroupId(GenderButtons);
+    _bin_encoding_button.setRadioGroupId(EncodingSelectionButtons);
+    _hex_encoding_button.setRadioGroupId(EncodingSelectionButtons);
+    _utf8_encoding_button.setRadioGroupId(EncodingSelectionButtons);
 //===================================================================================================
     addAndMakeVisible(_text_block);
     _text_block.setCaretVisible(true);
@@ -138,14 +138,14 @@ void AsymWindow::encryptTextSection() {
         return;
     }
     std::string chars(_text_block.getTextValue().toString().toStdString());
-    switch (_cur_toggle_state) {
-        case Hex:
+    switch (_selected_encoding) {
+        case HEX:
             hexToBinary(chars);
             break;
         case UTF8:
             UTF8ToBinary(chars);
             break;
-        case Binary:
+        case BINARY:
             break;
         default:
             break;
@@ -155,8 +155,8 @@ void AsymWindow::encryptTextSection() {
     _key_to_apply.applyToValue(T);
     chars = fromBigInt(T);
 
-    switch (_cur_toggle_state) {
-        case Hex:
+    switch (_selected_encoding) {
+        case HEX:
             binaryToHex(chars);
             break;
         case UTF8:
@@ -165,7 +165,7 @@ void AsymWindow::encryptTextSection() {
                 return;
             }
             break;
-        case Binary:
+        case BINARY:
             break;
         default:
             break;
@@ -179,14 +179,14 @@ void AsymWindow::showTextHash() {
         showMessage("Пустое сообщение", "Ошибка");
         return;
     }
-    switch (_cur_toggle_state) {
-        case Binary:
+    switch (_selected_encoding) {
+        case BINARY:
             if (!isBinary(chars)) {
                 showMessage("Не удалось взять хэш от сообщения", "Ошибка");
                 return;
             }
             break;
-        case Hex:
+        case HEX:
             if (!hexToBinary(chars)) {
                 showMessage("Не удалось взять хэш от сообщения", "Ошибка");
                 return;
@@ -212,12 +212,12 @@ void AsymWindow::showTextHash() {
 }
 
 void AsymWindow::decodeToBinary() {
-    if (_cur_toggle_state == Binary) {
+    if (_selected_encoding == BINARY) {
         return;
     }
     std::string chars(_text_block.getTextValue().toString().toStdString());
-    switch (_cur_toggle_state) {
-        case Hex:
+    switch (_selected_encoding) {
+        case HEX:
             if (!hexToBinary(chars)) {
                 _bin_encoding_button.setToggleState(false, dontSendNotification);
                 _hex_encoding_button.setToggleState(true, dontSendNotification);
@@ -231,17 +231,17 @@ void AsymWindow::decodeToBinary() {
         default:
             break;
     }
-    _cur_toggle_state = Binary;
+    _selected_encoding = BINARY;
     _text_block.setText(String(chars));
 }
 
 void AsymWindow::decodeToHex() {
-    if (_cur_toggle_state == Hex) {
+    if (_selected_encoding == HEX) {
         return;
     }
     std::string chars(_text_block.getTextValue().toString().toStdString());
-    switch (_cur_toggle_state) {
-        case Binary:
+    switch (_selected_encoding) {
+        case BINARY:
             if (!binaryToHex(chars)) {
                 _hex_encoding_button.setToggleState(false, dontSendNotification);
                 _bin_encoding_button.setToggleState(true, dontSendNotification);
@@ -256,17 +256,17 @@ void AsymWindow::decodeToHex() {
         default:
             break;
     }
-    _cur_toggle_state = Hex;
+    _selected_encoding = HEX;
     _text_block.setText(String(chars));
 }
 
 void AsymWindow::decodeToUTF8() {
-    if (_cur_toggle_state == UTF8) {
+    if (_selected_encoding == UTF8) {
         return;
     }
     std::string chars(_text_block.getTextValue().toString().toStdString());
-    switch (_cur_toggle_state) {
-        case Binary:
+    switch (_selected_encoding) {
+        case BINARY:
             if(!isBinary(chars)) {
                 _hex_encoding_button.setToggleState(false, dontSendNotification);
                 _bin_encoding_button.setToggleState(true, dontSendNotification);
@@ -280,7 +280,7 @@ void AsymWindow::decodeToUTF8() {
                 return;
             }
             break;
-        case Hex:
+        case HEX:
             if (!hexToBinary(chars)) {
                 _utf8_encoding_button.setToggleState(false, dontSendNotification);
                 _hex_encoding_button.setToggleState(true, dontSendNotification);
@@ -297,7 +297,7 @@ void AsymWindow::decodeToUTF8() {
         default:
             break;
     }
-    _cur_toggle_state = UTF8;
+    _selected_encoding = UTF8;
     _text_block.setText(String(chars));
 }
 

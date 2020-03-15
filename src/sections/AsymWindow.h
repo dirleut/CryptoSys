@@ -4,9 +4,7 @@
 #include <string>
 #include <bitset>
 #include "../JuceLibraryCode/JuceHeader.h"
-
-enum RadioButtonIds { GenderButtons = 1 };
-enum ToggleStates { Binary, Hex, UTF8 };
+#include "../lib/Toggles.h"
 
  // TODO разгрузить класс
 class AsymWindow : public Component, public Button::Listener
@@ -64,5 +62,5 @@ private:
     ToggleButton _hex_encoding_button { CharPointer_UTF8("Hex") };
     ToggleButton _utf8_encoding_button { CharPointer_UTF8("UTF-8") };
 
-    ToggleStates _cur_toggle_state;
+    EncodingSelection _selected_encoding;
 };
