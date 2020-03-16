@@ -1,13 +1,21 @@
 
 #include "SymWindow.h"
+#include "../lib/SymCiphers.h"
+#include "../lib/PopUp.h"
+
+// TODO добавить русский алфавит
 
 SymWindow::SymWindow()
 {
-    addAndMakeVisible(_ceasar_toggle);
+    addAndMakeVisible(_caesar_toggle);
+    _caesar_toggle.setToggleState(true, dontSendNotification);
+    _caesar_toggle.addListener(this);
     addAndMakeVisible(_scytale_toggle);
+    _scytale_toggle.addListener(this);
     addAndMakeVisible(_vigenere_toggle);
+    _vigenere_toggle.addListener(this);
 
-    _ceasar_toggle.setRadioGroupId(CipherSelectionButtons);
+    _caesar_toggle.setRadioGroupId(CipherSelectionButtons);
     _scytale_toggle.setRadioGroupId(CipherSelectionButtons);
     _vigenere_toggle.setRadioGroupId(CipherSelectionButtons);
 
@@ -39,12 +47,11 @@ SymWindow::SymWindow()
 
     addAndMakeVisible(_encrypt_button);
     _encrypt_button.setButtonText(CharPointer_UTF8("Зашифровать"));
-    _encrypt_button.setColour(TextButton::buttonColourId, Colour(0xff2fad2f));
+    _encrypt_button.addListener(this);
 
     addAndMakeVisible(_decrypt_button);
     _decrypt_button.setButtonText(CharPointer_UTF8("Расшифровать"));
     _decrypt_button.addListener(this);
-    _decrypt_button.setColour(TextButton::buttonColourId, Colour(0xff2fad2f));
 
     addAndMakeVisible(_result_text_desc);
     _result_text_desc.setText(CharPointer_UTF8("Результат"), dontSendNotification);
@@ -64,7 +71,7 @@ SymWindow::SymWindow()
 
 SymWindow::~SymWindow()
 {
-    _ceasar_toggle.removeListener(this);
+    _caesar_toggle.removeListener(this);
     _scytale_toggle.removeListener(this);
     _vigenere_toggle.removeListener(this);
     _encrypt_button.removeListener(this);
@@ -79,7 +86,8 @@ void SymWindow::paint(Graphics& g)
 
 void SymWindow::resized()
 {
-    _ceasar_toggle.setBounds(16, 24, 150, 24);
+    // TODO подписать эти числа чтобы не были магическими
+    _caesar_toggle.setBounds(16, 24, 150, 24);
     _scytale_toggle.setBounds(400, 24, 150, 24);
     _vigenere_toggle.setBounds(200, 24, 150, 24);
 
@@ -96,23 +104,76 @@ void SymWindow::resized()
     _result_text_block.setBounds(168, 256, 320, 80);
 }
 
-void SymWindow::buttonClicked(Button* buttonThatWasClicked)
+void SymWindow::applyCaesar(short shift)
 {
-    /*
-    if(buttonThatWasClicked == _encrypt_button.get())
-    {
+    std::string msg = _init_text_block.getTextValue().toString().toStdString();
+    if (msg.empty()) {
+        return;
     }
-    else if(buttonThatWasClicked == _ceasar_toggle)
-    {
+    if (!isEnglish(msg)) {
+        showMessage("Использован не латинский алфавит", "Ошибка");
+        return;
     }
-    else if(buttonThatWasClicked == _scytale_toggle)
-    {
+    caesar(msg, shift);
+    _result_text_block.setText(String(msg));
+}
+
+void SymWindow::buttonClicked(Button* clicked)
+{
+    if(clicked == &_caesar_toggle) {
+        _selected_cipher = CAESAR;
     }
-    else if(buttonThatWasClicked == _vigenere_toggle)
-    {
+    else if(clicked == &_scytale_toggle) {
+        _selected_cipher = SCYTALE;
     }
-    else if(buttonThatWasClicked == _decrypt_button.get())
-    {
+    else if(clicked == &_vigenere_toggle) {
+        _selected_cipher = VIGINERE;
     }
-     */
+    else if(clicked == &_encrypt_button)
+    {
+        switch (_selected_cipher) {
+            case CAESAR:
+            {
+                short shift = _key_input_field.getTextValue().toString().getIntValue();
+                applyCaesar(shift);
+                break;
+            }
+            case SCYTALE:
+            {
+                break;
+            }
+            case VIGINERE:
+            {
+                break;
+            }
+            default:
+                break;
+        }
+    }
+    else if(clicked == &_decrypt_button)
+    {
+        switch (_selected_cipher) {
+            case CAESAR:
+            {
+                short shift = ENG_ALPHABET_SIZE - _key_input_field.getTextValue().toString().getIntValue();
+                applyCaesar(shift);
+                break;
+            }
+            case SCYTALE:
+            {
+                break;
+            }
+            case VIGINERE:
+            {
+                break;
+            }
+            default:
+                break;
+        }
+    }
+}
+
+void SymWindow::showMessage(const std::string &message, const std::string &header) {
+    auto dialog = std::make_unique<PopUp>(message);
+    DialogWindow::showModalDialog(header, dialog.get(), this, Colours::grey, true);
 }

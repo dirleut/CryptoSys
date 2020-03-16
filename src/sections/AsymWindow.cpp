@@ -3,6 +3,7 @@
 #include "../lib/Bignumber.h"
 #include "../lib/PopUp.h"
 
+// TODO исправить MD5
 const unsigned TEXT_BYTE_SIZE = 4000;
 
 AsymWindow::AsymWindow()
@@ -301,7 +302,8 @@ void AsymWindow::decodeToUTF8() {
     _text_block.setText(String(chars));
 }
 
-void AsymWindow::createNamedLabel(Label *main, Label *attached, const String &text, Justification justification, Colour textColour, Colour backgroundColour) {
+void AsymWindow::createNamedLabel(Label *main, Label *attached, const String &text,
+                                  Justification justification, Colour textColour, Colour backgroundColour) {
     addAndMakeVisible(attached);
     attached->setText(text, dontSendNotification);
     attached->attachToComponent(main, true);
@@ -311,7 +313,6 @@ void AsymWindow::createNamedLabel(Label *main, Label *attached, const String &te
     addAndMakeVisible(main);
     main->setEditable(true);
     main->setColour(Label::backgroundColourId, backgroundColour);
-    main->onTextChange = [this]{};
 }
 
 void AsymWindow::showMessage(const std::string &message, const std::string &header) {

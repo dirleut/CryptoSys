@@ -11,7 +11,7 @@ enum EncodingSelection {
 };
 
 enum CipherSelection {
-    CEASAR,
+    CAESAR,
     SCYTALE,
     VIGINERE
 };

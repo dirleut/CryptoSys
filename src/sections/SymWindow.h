@@ -14,12 +14,14 @@ public:
     void buttonClicked (Button* buttonThatWasClicked) override;
 
 private:
+    void applyCaesar(short shift);
+    void showMessage(const std::string &message, const std::string &header);
 
-    ToggleButton _ceasar_toggle { CharPointer_UTF8("Цезаря") };
+    ToggleButton _caesar_toggle { CharPointer_UTF8("Цезаря") };
     ToggleButton _scytale_toggle { CharPointer_UTF8("Скитала") };
     ToggleButton _vigenere_toggle { CharPointer_UTF8("Виженера") };
 
-    CipherSelection _selected_cipher;
+    CipherSelection _selected_cipher = CAESAR;
 
     TextButton _encrypt_button;
     TextEditor _init_text_block;
