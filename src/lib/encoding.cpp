@@ -116,8 +116,6 @@ bool binaryToUTF8(std::string &bitstr) {
         else
             return false;
         outstr += symb;
-        //outstr += char(bits.to_ulong());
-        //std::cout << outstr << std::endl;
     }
     bitstr = outstr;
     return true;

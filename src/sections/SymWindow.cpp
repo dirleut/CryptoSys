@@ -110,6 +110,7 @@ void SymWindow::applyCaesar(short shift)
     if (msg.empty()) {
         return;
     }
+    leaveLettersOnly(msg);
     if (!isLatin(msg)) {
         showMessage("Использован не латинский алфавит", "Ошибка");
         return;
@@ -125,12 +126,44 @@ void SymWindow::applyVigenere(bool encrypt)
     if (msg.empty()) {
         return;
     }
+    leaveLettersOnly(msg);
     if (!isLatin(msg)) {
         showMessage("Использован не латинский алфавит", "Ошибка");
         return;
     }
     vigenere(msg, key, encrypt);
     _result_text_block.setText(String(msg));
+}
+
+void SymWindow::applyScytale(short shift, bool encrypt)
+{
+    if (shift == 0) {
+        return;
+    }
+    std::string msg = _init_text_block.getTextValue().toString().toStdString();
+    if (msg.empty()) {
+        return;
+    }
+
+    for (size_t i = 0; i < msg.length() % shift; ++i) {
+        msg += SPEC_CHAR;
+    }
+    if (encrypt) {
+        leaveLettersOnly(msg);
+        if (!isLatin(msg)) {
+            showMessage("Использован не латинский алфавит", "Ошибка");
+            return;
+        }
+        _result_text_block.setText(String(scytale(msg, shift)));
+    } else {
+        msg = scytale(msg, shift);
+        for(size_t i = 0; i < shift; ++i) {
+            if (msg.back() == SPEC_CHAR) {
+                msg = msg.substr(0, msg.size() - 1);
+            }
+        }
+        _result_text_block.setText(String(msg));
+    }
 }
 
 void SymWindow::buttonClicked(Button* clicked)
@@ -155,6 +188,8 @@ void SymWindow::buttonClicked(Button* clicked)
             }
             case SCYTALE:
             {
+                short shift = _key_input_field.getTextValue().toString().getIntValue();
+                applyScytale(shift, true);
                 break;
             }
             case VIGINERE:
@@ -171,12 +206,15 @@ void SymWindow::buttonClicked(Button* clicked)
         switch (_selected_cipher) {
             case CAESAR:
             {
-                short shift = ENG_ALPHABET_SIZE - _key_input_field.getTextValue().toString().getIntValue();
+                short shift = LAT_ALPHABET_SIZE - _key_input_field.getTextValue().toString().getIntValue();
                 applyCaesar(shift);
                 break;
             }
             case SCYTALE:
             {
+                short shift = _init_text_block.getTextValue().toString().toStdString().length() /
+                    _key_input_field.getTextValue().toString().getIntValue();
+                applyScytale(shift, false);
                 break;
             }
             case VIGINERE:
