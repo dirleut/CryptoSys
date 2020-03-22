@@ -15,6 +15,8 @@ public:
 
 private:
     void applyCaesar(short shift);
+    // TODO сделать enum
+    void applyVigenere(bool encrypt);
     void showMessage(const std::string &message, const std::string &header);
 
     ToggleButton _caesar_toggle { CharPointer_UTF8("Цезаря") };

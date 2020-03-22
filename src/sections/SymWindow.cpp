@@ -110,11 +110,26 @@ void SymWindow::applyCaesar(short shift)
     if (msg.empty()) {
         return;
     }
-    if (!isEnglish(msg)) {
+    if (!isLatin(msg)) {
         showMessage("Использован не латинский алфавит", "Ошибка");
         return;
     }
     caesar(msg, shift);
+    _result_text_block.setText(String(msg));
+}
+
+void SymWindow::applyVigenere(bool encrypt)
+{
+    std::string key = _key_input_field.getTextValue().toString().toStdString();
+    std::string msg = _init_text_block.getTextValue().toString().toStdString();
+    if (msg.empty()) {
+        return;
+    }
+    if (!isLatin(msg)) {
+        showMessage("Использован не латинский алфавит", "Ошибка");
+        return;
+    }
+    vigenere(msg, key, encrypt);
     _result_text_block.setText(String(msg));
 }
 
@@ -144,6 +159,7 @@ void SymWindow::buttonClicked(Button* clicked)
             }
             case VIGINERE:
             {
+                applyVigenere(true);
                 break;
             }
             default:
@@ -165,6 +181,7 @@ void SymWindow::buttonClicked(Button* clicked)
             }
             case VIGINERE:
             {
+                applyVigenere(false);
                 break;
             }
             default:
