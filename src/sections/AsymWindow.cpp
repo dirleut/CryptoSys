@@ -4,7 +4,6 @@
 #include "../lib/PopUp.h"
 
 // TODO исправить MD5
-const unsigned TEXT_BYTE_SIZE = 4000;
 
 AsymWindow::AsymWindow()
 {
@@ -98,12 +97,6 @@ AsymWindow::AsymWindow()
     _text_block.setScrollbarsShown(true);
     _text_block.setMultiLine(true);
     _text_block.setText(CharPointer_UTF8("Введите текст для шифрования..."));
-    _text_block.onTextChange = [this] {
-        if (_text_block.getTextValue().toString().length() >= TEXT_BYTE_SIZE / 8) {
-            showMessage("Размер текста слишком большой", "Ошибка");
-            _text_block.clear();
-        }
-    };
 
     setSize (800, 550);
 }
@@ -200,15 +193,19 @@ void AsymWindow::showTextHash() {
             break;
     }
 
-    uint8_t data[TEXT_BYTE_SIZE] = {0};
+    size_t arr_size = (chars.length() / 8) + 1;
+    char data[arr_size];
+    memset(data, 0, sizeof(arr_size));
+
     std::stringstream ss(chars);
     int i = 0;
     std::bitset<8> byte;
     while (ss >> byte) {
-        data[i++] = byte.to_ulong();
+        data[i++] = char(byte.to_ulong());
     }
+    data[arr_size] = '\0';
 
-    MD5 md5(&data, TEXT_BYTE_SIZE / 8);
+    MD5 md5((char*)data, strlen(data));
     _msg_hash_field.setText(md5.toHexString(), dontSendNotification);
 }
 
