@@ -3,8 +3,6 @@
 #include "../lib/Bignumber.h"
 #include "../lib/PopUp.h"
 
-// TODO исправить MD5
-
 AsymWindow::AsymWindow()
 {
     addAndMakeVisible(_header);
