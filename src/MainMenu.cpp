@@ -37,7 +37,7 @@ MainMenu::~MainMenu()
 
 void MainMenu::paint (Graphics& g)
 {
-    g.fillAll (Colour (0xff094c09));
+    g.fillAll (Colour (0xff999900));
 }
 
 void MainMenu::resized()

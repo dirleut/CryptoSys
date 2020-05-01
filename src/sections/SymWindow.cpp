@@ -81,7 +81,7 @@ SymWindow::~SymWindow()
 //==============================================================================
 void SymWindow::paint(Graphics& g)
 {
-    g.fillAll(Colours::green);
+    g.fillAll(Colour (0xff008000));
 }
 
 void SymWindow::resized()
