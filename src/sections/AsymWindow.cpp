@@ -155,12 +155,19 @@ void AsymWindow::encryptTextSection() {
 
     switch (_selected_encoding) {
         case HEX:
-            binaryToHex(chars);
+            // Попробуем перевести сначала в читаемую кодировку
+            if (binaryToUTF8(chars)) {
+                _utf8_encoding_button.setToggleState(true, dontSendNotification);
+                _selected_encoding = UTF8;
+            } else {
+                binaryToHex(chars);
+            }
             break;
         case UTF8:
             if(!binaryToUTF8(chars)) {
-                showMessage("Невозможно закодировать в UTF-8", "Ошибка");
-                return;
+                _hex_encoding_button.setToggleState(true, dontSendNotification);
+                _selected_encoding = HEX;
+                binaryToHex(chars);
             }
             break;
         case BINARY:
