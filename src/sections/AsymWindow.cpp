@@ -312,9 +312,8 @@ void AsymWindow::createNamedLabel(Label *main, Label *attached, const String &te
 }
 
 void AsymWindow::showMessage(const std::string &message, const std::string &header) {
-    PopUp* dialog = new PopUp(message);
-    DialogWindow::showModalDialog(header, dialog, this, Colours::grey, true);
-    delete dialog;
+    auto dialog = std::make_unique<PopUp>(message);
+    DialogWindow::showModalDialog(header, dialog.get(), this, Colours::grey, true);
 }
 
 void AsymWindow::resized()

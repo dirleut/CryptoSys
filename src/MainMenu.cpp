@@ -53,21 +53,21 @@ void MainMenu::buttonClicked (Button* buttonThatWasClicked)
 {
     if (buttonThatWasClicked == _sym_section_button.get())
     {
-        SymWindow* sym_section = new SymWindow();
-        DialogWindow::showModalDialog(CharPointer_UTF8("Симметричная секция"), sym_section, this, Colours::grey, true, true, true);
-        delete sym_section;
+        auto sym_section = std::make_unique<SymWindow>();
+        DialogWindow::showModalDialog(CharPointer_UTF8("Симметричная секция"), sym_section.get(), this, Colours::grey, true, true, true);
     }
     else if (buttonThatWasClicked == _asym_section_button.get())
     {
-        AsymWindow* asym_section = new AsymWindow();
-        DialogWindow::showModalDialog(CharPointer_UTF8("Acимметричная секция"), asym_section, this, Colours::grey, true, true, true);
-        delete asym_section;
+        auto asym_section = std::make_unique<AsymWindow>();
+        DialogWindow::showModalDialog(CharPointer_UTF8("Acимметричная секция"), asym_section.get(), this, Colours::grey, true, true, true);
     }
     else if (buttonThatWasClicked == _info_button.get())
     {
+        // Справка
     }
     else if (buttonThatWasClicked == _lfsr_section_button.get())
     {
+        // Линейный регистр сдвига
     }
 }
 
