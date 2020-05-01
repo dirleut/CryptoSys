@@ -63,4 +63,7 @@ private:
     ToggleButton _utf8_encoding_button { CharPointer_UTF8("UTF-8") };
 
     EncodingSelection _selected_encoding;
+
+    const int _size_x = 800;
+    const int _size_y = 550;
 };

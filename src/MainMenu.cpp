@@ -24,7 +24,7 @@ MainMenu::MainMenu ()
     _lfsr_section_button->setButtonText (CharPointer_UTF8 ("Линейный регистр сдвига"));
     _lfsr_section_button->addListener (this);
 
-    setSize (500, 300);
+    setSize(_size_x, _size_y);
 }
 
 MainMenu::~MainMenu()

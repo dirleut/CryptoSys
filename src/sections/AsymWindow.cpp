@@ -97,7 +97,7 @@ AsymWindow::AsymWindow()
     _text_block.setMultiLine(true);
     _text_block.setText(CharPointer_UTF8("Введите текст для шифрования..."));
 
-    setSize (800, 550);
+    setSize(_size_x, _size_y);
 }
 //===================================================================================================
 AsymWindow::~AsymWindow()
