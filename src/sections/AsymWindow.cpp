@@ -318,24 +318,45 @@ void AsymWindow::showMessage(const std::string &message, const std::string &head
 
 void AsymWindow::resized()
 {
-     // TODO подписать эти числа чтобы не были магическими
-    _header.setBounds (10, 10, getWidth() - 20, 35);
-    _key_length_field.setBounds (130, 50, 100, 25);
-    
-    _keys_gen_button.setBounds (getWidth() - 400, 50, 200, 25);
-    _private_key_field.setBounds(130, 80, getWidth() - 200, 25);
-    _public_key_field.setBounds(130, 110, getWidth() - 200, 25);
-    
-    _input_key_field.setBounds(180, 170, getWidth() - 250 , 25);
-    _apply_key_button.setBounds (180, 200, 200, 25);
-    
-    _msg_hash_field.setBounds(245, 230, getWidth() - 315 , 25);
-    _get_msg_hash_button.setBounds(180, 260, 200, 25);
+    const int toggle_pos_x = 20;
+    const int toggle_pos_y = 150;
+    const int toggle_distance_y = 20;
+    const int toggle_size_x = 100;
+    const int toggle_size_y = 20;
 
-    _encoding_desc.setBounds(20, 150, 100, 20);
-    _bin_encoding_button.setBounds(20, 170, 100, 20);
-    _hex_encoding_button.setBounds(20, 190, 150, 20);
-    _utf8_encoding_button.setBounds(20, 210, 100, 20);
+    const int element_size_x = 200;
+    const int element_size_y = 25;
+    const int element_pos_x = 130;
+    const int element_distance_y = 30;
+
+    _header.setBounds (10, 10, getWidth() - 20, element_size_y);
+    _key_length_field.setBounds (element_pos_x, 50, 100, element_size_y);
+    
+    _keys_gen_button.setBounds (getWidth() - 400, 50,
+                                element_size_x, element_size_y);
+    _private_key_field.setBounds(element_pos_x, 80,
+                                 getWidth() - element_size_x, element_size_y);
+    _public_key_field.setBounds(element_pos_x, 80 + element_distance_y,
+                                getWidth() - element_size_x, element_size_y);
+    
+    _input_key_field.setBounds(element_pos_x, 170,
+                               getWidth() - element_size_x + 50 , element_size_y);
+    _apply_key_button.setBounds (element_pos_x + 50, 170 + element_distance_y,
+                                 element_size_x, element_size_y);
+    
+    _msg_hash_field.setBounds(245, 230,
+                              getWidth() - element_size_x + 115 , element_size_y);
+    _get_msg_hash_button.setBounds(element_pos_x + 50, 230 + element_distance_y,
+                                   element_size_x, element_size_y);
+
+    _encoding_desc.setBounds(toggle_pos_x, toggle_pos_y,
+                             toggle_size_x, toggle_size_y);
+    _bin_encoding_button.setBounds(toggle_pos_x, toggle_pos_y + toggle_distance_y,
+                                   toggle_size_x, toggle_size_y);
+    _hex_encoding_button.setBounds(toggle_pos_x, toggle_pos_y + 2 * toggle_distance_y,
+                                   toggle_size_x + 50, toggle_size_y);
+    _utf8_encoding_button.setBounds(toggle_pos_x, toggle_pos_y + 3 * toggle_distance_y,
+                                    toggle_size_x, toggle_size_y);
 
     _text_block.setBounds(10, 300, getWidth() - 20, getHeight() - 310);
 }
