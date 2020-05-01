@@ -3,6 +3,7 @@
 #include "../lib/Bignumber.h"
 #include "../lib/PopUp.h"
 
+// TODO рефакторить
 AsymWindow::AsymWindow()
 {
     addAndMakeVisible(_header);

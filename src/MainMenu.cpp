@@ -54,13 +54,13 @@ void MainMenu::buttonClicked (Button* buttonThatWasClicked)
     if (buttonThatWasClicked == _sym_section_button.get())
     {
         SymWindow* sym_section = new SymWindow();
-        DialogWindow::showModalDialog(CharPointer_UTF8("Симметричная секция"), sym_section, this, Colours::grey, true);
+        DialogWindow::showModalDialog(CharPointer_UTF8("Симметричная секция"), sym_section, this, Colours::grey, true, true, true);
         delete sym_section;
     }
     else if (buttonThatWasClicked == _asym_section_button.get())
     {
         AsymWindow* asym_section = new AsymWindow();
-        DialogWindow::showModalDialog(CharPointer_UTF8("Acимметричная секция"), asym_section, this, Colours::grey, true);
+        DialogWindow::showModalDialog(CharPointer_UTF8("Acимметричная секция"), asym_section, this, Colours::grey, true, true, true);
         delete asym_section;
     }
     else if (buttonThatWasClicked == _info_button.get())

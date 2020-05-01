@@ -66,7 +66,7 @@ SymWindow::SymWindow()
     _result_text_block.setCaretVisible(true);
     _result_text_block.setPopupMenuEnabled(true);
 
-    setSize(600, 400);
+    setSize(_size_x, _size_y);
 }
 
 SymWindow::~SymWindow()
@@ -86,22 +86,38 @@ void SymWindow::paint(Graphics& g)
 
 void SymWindow::resized()
 {
-    // TODO подписать эти числа чтобы не были магическими
-    _caesar_toggle.setBounds(16, 24, 150, 24);
-    _scytale_toggle.setBounds(400, 24, 150, 24);
-    _vigenere_toggle.setBounds(200, 24, 150, 24);
+    const int toggle_pos_x = 30;
+    const int toggle_pos_y = 150;
+    const int toggle_distance_y = 30;
 
-    _init_text_desc.setBounds(-29, 79, 200, 56);
-    _init_text_block.setBounds(171, 71, 320, 80);
+    const int button_size_x = 150;
+    const int button_size_y = 24;
+    const int margin_x = 170;
+    const int button_pos_y = 200;
 
-    _key_input_field.setBounds(171, 159, 184, 24);
-    _key_field_desc.setBounds(120, 160, 168, 19);
+    const int text_block_size_x = 320;
+    const int text_block_size_y = 80;
 
-    _encrypt_button.setBounds(128, 208, 150, 24);
-    _decrypt_button.setBounds(384, 208, 150, 24);
+    _caesar_toggle.setBounds(toggle_pos_x, toggle_pos_y,
+                             button_size_x, button_size_y);
+    _vigenere_toggle.setBounds(toggle_pos_x, toggle_pos_y + toggle_distance_y,
+                               button_size_x, button_size_y);
+    _scytale_toggle.setBounds(toggle_pos_x, toggle_pos_y + 2 * toggle_distance_y,
+                              button_size_x, button_size_y);
 
-    _result_text_desc.setBounds(48, 272, 120, 40);
-    _result_text_block.setBounds(168, 256, 320, 80);
+    _init_text_block.setBounds(margin_x, 30, text_block_size_x, text_block_size_y);
+    _init_text_desc.setBounds(-30, 40, 200, button_size_y);
+
+    _key_input_field.setBounds(margin_x, 120, text_block_size_x, button_size_y);
+    _key_field_desc.setBounds(120, 120, button_size_x, button_size_y);
+
+    _encrypt_button.setBounds(margin_x, button_pos_y,
+                              button_size_x, button_size_y);
+    _decrypt_button.setBounds(margin_x + text_block_size_x - button_size_x, button_pos_y,
+                              button_size_x, button_size_y);
+
+    _result_text_block.setBounds(margin_x, 250, text_block_size_x, text_block_size_y);
+    _result_text_desc.setBounds(50, 260, 120, button_size_y);
 }
 
 void SymWindow::applyCaesar(short shift)

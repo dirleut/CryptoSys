@@ -35,5 +35,7 @@ private:
     TextEditor _result_text_block;
     TextButton _decrypt_button;
 
+    const int _size_x = 600;
+    const int _size_y = 380;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SymWindow)
 };
