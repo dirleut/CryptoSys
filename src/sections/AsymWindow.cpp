@@ -22,13 +22,7 @@ AsymWindow::AsymWindow()
     
     addAndMakeVisible(_keys_gen_button);
     _keys_gen_button.setButtonText(CharPointer_UTF8("Сгенерировать ключи"));
-    _keys_gen_button.onClick = [this] {
-        if (_init_key_length > 2048 || _init_key_length < 17){
-            showMessage("Длина ключа должна быть в диапазоне от 17 до 2048", "Ошибка");
-            return;
-        }
-        keyGen();
-    };
+    _keys_gen_button.addListener(this);
 //===================================================================================================
     createNamedLabel(&_private_key_field, &_private_key_desc, CharPointer_UTF8("Закрытый ключ"), Justification::right, Colours::white, Colour::fromHSV(darkPurple, 0.5, 0.3, 1.0));
     _private_key_field.onTextChange = [this]{};
@@ -53,13 +47,7 @@ AsymWindow::AsymWindow()
 //===================================================================================================
     addAndMakeVisible(_apply_key_button);
     _apply_key_button.setButtonText(CharPointer_UTF8("Применить ключ"));
-    _apply_key_button.onClick = [this] {
-        if (_text_block.getTextValue().toString().toStdString() == "") {
-            showMessage("Секция текста пуста", "Ошибка");
-            return;
-        }
-        encryptTextSection();
-    };
+    _apply_key_button.addListener(this);
 
     addAndMakeVisible(_get_msg_hash_button);
     _get_msg_hash_button.setButtonText(CharPointer_UTF8("Посчитать MD5 от сообщения"));
@@ -77,15 +65,9 @@ AsymWindow::AsymWindow()
     _utf8_encoding_button.setToggleState(true, dontSendNotification);
     _selected_encoding = UTF8;
 
-    _bin_encoding_button.onClick = [this] {
-        decodeToBinary();
-    };
-    _hex_encoding_button.onClick = [this] {
-        decodeToHex();
-    };
-    _utf8_encoding_button.onClick = [this] {
-        decodeToUTF8();
-    };
+    _bin_encoding_button.addListener(this);
+    _hex_encoding_button.addListener(this);
+    _utf8_encoding_button.addListener(this);
 
     _bin_encoding_button.setRadioGroupId(EncodingSelectionButtons);
     _hex_encoding_button.setRadioGroupId(EncodingSelectionButtons);
@@ -116,16 +98,39 @@ void AsymWindow::paint (Graphics& g)
     g.fillAll(Colour::fromHSV(darkPurple, 0.5, 0.4, 1.0));
 }
 
-// Зачем-то нужна
-void AsymWindow::buttonClicked(Button *clickedButton) {}
+void AsymWindow::buttonClicked(Button *clicked) {
+    if (clicked == &_bin_encoding_button) {
+        decodeToBinary();
+    }
+    else if (clicked == &_hex_encoding_button) {
+        decodeToHex();
+    }
+    else if (clicked == &_utf8_encoding_button) {
+        decodeToUTF8();
+    }
+    else if (clicked == &_keys_gen_button) {
+        keyGen();
+    }
+    else if (clicked == &_apply_key_button) {
+        encryptTextSection();
+    }
+}
 
 void AsymWindow::keyGen() {
+    if (_init_key_length > 2048 || _init_key_length < 17){
+        showMessage("Длина ключа должна быть в диапазоне от 17 до 2048", "Ошибка");
+        return;
+    }
     RSAKey::createKeyPair(_public_key, _private_key, _init_key_length);
     _private_key_field.setText(_private_key.toString(), dontSendNotification);
     _public_key_field.setText(_public_key.toString(), dontSendNotification);
 }
 
 void AsymWindow::encryptTextSection() {
+    if (_text_block.getTextValue().toString().toStdString() == "") {
+        showMessage("Секция текста пуста", "Ошибка");
+        return;
+    }
     if (!_key_to_apply.isValid()) {
         showMessage("Некорректный ключ", "Ошибка");
         return;
@@ -169,7 +174,7 @@ void AsymWindow::encryptTextSection() {
 void AsymWindow::showTextHash() {
     std::string chars(_text_block.getTextValue().toString().toStdString());
     if (chars.empty()) {
-        showMessage("Пустое сообщение", "Ошибка");
+        showMessage("Секция текста пуста", "Ошибка");
         return;
     }
     switch (_selected_encoding) {
@@ -339,9 +344,9 @@ void AsymWindow::resized()
     _public_key_field.setBounds(element_pos_x, 80 + element_distance_y,
                                 getWidth() - element_size_x, element_size_y);
     
-    _input_key_field.setBounds(element_pos_x, 170,
+    _input_key_field.setBounds(180, 170,
                                getWidth() - element_size_x + 50 , element_size_y);
-    _apply_key_button.setBounds (element_pos_x + 50, 170 + element_distance_y,
+    _apply_key_button.setBounds (180, 170 + element_distance_y,
                                  element_size_x, element_size_y);
     
     _msg_hash_field.setBounds(245, 230,
