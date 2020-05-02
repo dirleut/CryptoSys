@@ -121,6 +121,7 @@ bool binaryToUTF8(std::string &bitstr) {
     return true;
 }
 
+// TODO чтобы false тоже возвращала
 bool UTF8ToBinary(std::string &utf8str) {
     std::string outstr;
     for (std::size_t i = 0; i < utf8str.size(); ++i) {

@@ -362,12 +362,12 @@ void AsymWindow::resized()
                                 getWidth() - element_size_x, element_size_y);
     
     _input_key_field.setBounds(180, 170,
-                               getWidth() - element_size_x + 50 , element_size_y);
+                               getWidth() - element_size_x + 10, element_size_y);
     _apply_key_button.setBounds (180, 170 + element_distance_y,
                                  element_size_x, element_size_y);
     
     _msg_hash_field.setBounds(245, 230,
-                              getWidth() - element_size_x + 115 , element_size_y);
+                              getWidth() - element_size_x - 55, element_size_y);
     _get_msg_hash_button.setBounds(element_pos_x + 50, 230 + element_distance_y,
                                    element_size_x, element_size_y);
 
@@ -380,5 +380,5 @@ void AsymWindow::resized()
     _utf8_encoding_button.setBounds(toggle_pos_x, toggle_pos_y + 3 * toggle_distance_y,
                                     toggle_size_x, toggle_size_y);
 
-    _text_block.setBounds(10, 300, getWidth() - 20, getHeight() - 310);
+    _text_block.setBounds(10, 300, (getWidth() - 20) / 3 * 2, getHeight() - 310);
 }
