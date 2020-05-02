@@ -51,9 +51,7 @@ AsymWindow::AsymWindow()
 
     addAndMakeVisible(_get_msg_hash_button);
     _get_msg_hash_button.setButtonText(CharPointer_UTF8("Посчитать MD5 от сообщения"));
-    _get_msg_hash_button.onClick = [this] {
-        showTextHash();
-    };
+    _get_msg_hash_button.addListener(this);
 //===================================================================================================
     addAndMakeVisible(_encoding_desc);
     _encoding_desc.setColour(Label::textColourId, Colours::white);
@@ -113,6 +111,9 @@ void AsymWindow::buttonClicked(Button *clicked) {
     }
     else if (clicked == &_apply_key_button) {
         encryptTextSection();
+    }
+    else if (clicked == &_get_msg_hash_button) {
+        showTextHash();
     }
 }
 
@@ -225,6 +226,9 @@ void AsymWindow::decodeToBinary() {
         return;
     }
     std::string chars(_text_block.getTextValue().toString().toStdString());
+    if (chars.empty()) {
+        return;
+    }
     switch (_selected_encoding) {
         case HEX:
             if (!hexToBinary(chars)) {
@@ -249,6 +253,9 @@ void AsymWindow::decodeToHex() {
         return;
     }
     std::string chars(_text_block.getTextValue().toString().toStdString());
+    if (chars.empty()) {
+        return;
+    }
     switch (_selected_encoding) {
         case BINARY:
             if (!binaryToHex(chars)) {
@@ -274,6 +281,9 @@ void AsymWindow::decodeToUTF8() {
         return;
     }
     std::string chars(_text_block.getTextValue().toString().toStdString());
+    if (chars.empty()) {
+        return;
+    }
     switch (_selected_encoding) {
         case BINARY:
             if(!isBinary(chars)) {
