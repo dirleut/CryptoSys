@@ -22,6 +22,7 @@ public:
     void encryptTextSection();
     void calculateTextHash();
     void calculateExponentModulo();
+    void factorize();
     
     void decodeToBinary();
     void decodeToHex();
@@ -71,9 +72,14 @@ private:
     Label _input_modulus_field;
     Label _input_modulus_desc;
     Label _exponent_modulo_result_field;
-    TextButton _calculate_exp_modulo;
+    TextButton _calculate_exp_modulo_button;
+
+    Label _input_number_to_factorize_field;
+    Label _input_number_to_factorize_desc;
+    Label _factorization_result_field;
+    TextButton _factorize_button;
 
     Colour _label_background_colour = Colour::fromHSV(Colours::purple.getHue(), 0.5, 0.3, 1.0);
     const int _size_x = 800;
-    const int _size_y = 650;
+    const int _size_y = 600;
 };

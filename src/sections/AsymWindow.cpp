@@ -1,4 +1,6 @@
 #include "AsymWindow.h"
+
+#include <string>
 #include "../lib/Encoding.h"
 #include "../lib/Bignumber.h"
 #include "../lib/PopUp.h"
@@ -87,9 +89,21 @@ AsymWindow::AsymWindow()
     _exponent_modulo_result_field.setEditable(true);
     _exponent_modulo_result_field.setColour(Label::backgroundColourId, _label_background_colour);
 
-    addAndMakeVisible(_calculate_exp_modulo);
-    _calculate_exp_modulo.setButtonText(CharPointer_UTF8("Расчитать"));
-    _calculate_exp_modulo.addListener(this);
+    addAndMakeVisible(_calculate_exp_modulo_button);
+    _calculate_exp_modulo_button.setButtonText(CharPointer_UTF8("Расчитать"));
+    _calculate_exp_modulo_button.addListener(this);
+
+//===================================================================================================
+    createNamedLabel(&_input_number_to_factorize_field, &_input_number_to_factorize_desc, CharPointer_UTF8("Факторизация"),
+                     Justification::right, Colours::white, _label_background_colour);
+    addAndMakeVisible(_factorization_result_field);
+    _factorization_result_field.setEditable(true);
+    _factorization_result_field.setColour(Label::backgroundColourId, _label_background_colour);
+
+    addAndMakeVisible(_factorize_button);
+    _factorize_button.setButtonText(CharPointer_UTF8("Факторизовать"));
+    _factorize_button.addListener(this);
+
     setSize(_size_x, _size_y);
 }
 //===================================================================================================
@@ -141,8 +155,11 @@ void AsymWindow::buttonClicked(Button *clicked) {
     else if (clicked == &_get_msg_hash_button) {
         calculateTextHash();
     }
-    else if (clicked == &_calculate_exp_modulo) {
+    else if (clicked == &_calculate_exp_modulo_button) {
         calculateExponentModulo();
+    }
+    else if (clicked == &_factorize_button) {
+        factorize();
     }
 }
 
@@ -268,6 +285,46 @@ void AsymWindow::calculateExponentModulo() {
     _exponent_modulo_result_field.setText(String(result), dontSendNotification);
 }
 
+void AsymWindow::factorize() {
+    int64 number = _input_number_to_factorize_field.getTextValue().toString().getIntValue();
+
+    if (number == 0) {
+        return;
+    }
+    else if (number < 0) {
+        showMessage("Поддерживаются только\nположительные числа", "Ошибка");
+        return;
+    }
+    else if (number > 65536) {
+        showMessage("Число слишком большое", "Ошибка");
+        return;
+    }
+
+    std::vector<uint64_t> factors;
+    uint64_t factor = 2;
+    while (true) {
+        if (number % factor == 0) {
+            factors.push_back(factor);
+            if (number - factor == 0) {
+                break;
+            }
+            number /= factor;
+        } else {
+            if (factor > 2) {
+                factor += 2;
+            } else {
+              ++factor;
+            }
+        }
+    }
+
+    std::string result = "";
+    for (auto& number : factors) {
+        result += std::to_string(number) + " ";
+    }
+    _factorization_result_field.setText(String(result), dontSendNotification);
+}
+
 void AsymWindow::decodeToBinary() {
     if (_selected_encoding == BINARY) {
         return;
@@ -374,6 +431,7 @@ void AsymWindow::showMessage(const std::string &message, const std::string &head
 
 void AsymWindow::resized()
 {
+    const int margin_x = 10;
     const int toggle_pos_x = 20;
     const int toggle_pos_y = 150;
     const int toggle_distance_y = 20;
@@ -385,7 +443,10 @@ void AsymWindow::resized()
     const int element_pos_x = 130;
     const int element_distance_y = 30;
 
-    _header.setBounds (10, 10, getWidth() - 20, element_size_y);
+    const int text_block_size_x = (getWidth() - 20) / 3 * 2;
+    const int text_block_pos_y = 300;
+
+    _header.setBounds (margin_x, 10, getWidth() - 20, element_size_y);
     _key_length_field.setBounds (element_pos_x, 50, 100, element_size_y);
     
     _keys_gen_button.setBounds (getWidth() - 400, 50,
@@ -415,17 +476,27 @@ void AsymWindow::resized()
                                     toggle_size_x, toggle_size_y);
 
     // TODO подправить размер при изменении размера
-    _input_base_field.setBounds((getWidth() - 20) / 3 * 2 + 100, 300,
+
+    _input_base_field.setBounds(text_block_size_x + 100, text_block_pos_y,
                                 getWidth() - _size_x + element_size_x - 30, element_size_y);
-    _input_exponent_field.setBounds((getWidth() - 20) / 3 * 2 + 100, 300 + element_distance_y,
+    _input_exponent_field.setBounds(text_block_size_x + 100, text_block_pos_y + element_distance_y,
                                 getWidth() - _size_x + element_size_x - 30, element_size_y);
-    _input_modulus_field.setBounds((getWidth() - 20) / 3 * 2 + 100, 300 + 2 * element_distance_y,
+    _input_modulus_field.setBounds(text_block_size_x + 100, text_block_pos_y + 2 * element_distance_y,
                                 getWidth() - _size_x + element_size_x - 30, element_size_y);
 
-    _exponent_modulo_result_field.setBounds((getWidth() - 20) / 3 * 2 + 100, 300 + 3 * element_distance_y,
-                                            getWidth() - _size_x + element_size_x - 30, element_size_y);
-    _calculate_exp_modulo.setBounds((getWidth() - 20) / 3 * 2 + 15, 300 + 3 * element_distance_y,
+    _exponent_modulo_result_field.setBounds(text_block_size_x + 100, text_block_pos_y + 3 * element_distance_y,
+                                getWidth() - _size_x + element_size_x - 30, element_size_y);
+    _calculate_exp_modulo_button.setBounds(text_block_size_x + 15, text_block_pos_y + 3 * element_distance_y,
                                     element_size_x - 120, element_size_y);
 
-    _text_block.setBounds(10, 300, (getWidth() - 20) / 3 * 2, getHeight() - 310);
+    _input_number_to_factorize_field.setBounds(text_block_size_x + 110, text_block_pos_y + 5 * element_distance_y,
+                                element_size_x - 40, element_size_y);
+
+    _factorize_button.setBounds(text_block_size_x + 70, text_block_pos_y + 6 * element_distance_y,
+                                element_size_x - 50, element_size_y);
+
+    _factorization_result_field.setBounds(text_block_size_x + 20, text_block_pos_y + 7 * element_distance_y,
+                                element_size_x + 50, element_size_y);
+
+    _text_block.setBounds(margin_x, text_block_pos_y, text_block_size_x, getHeight() - 310);
 }
