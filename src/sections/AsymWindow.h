@@ -20,7 +20,8 @@ public:
 
     void keyGen();
     void encryptTextSection();
-    void showTextHash();
+    void calculateTextHash();
+    void calculateExponentModulo();
     
     void decodeToBinary();
     void decodeToHex();
@@ -61,9 +62,18 @@ private:
     ToggleButton _bin_encoding_button { CharPointer_UTF8("Двоичная") };
     ToggleButton _hex_encoding_button { CharPointer_UTF8("Hex") };
     ToggleButton _utf8_encoding_button { CharPointer_UTF8("UTF-8") };
-
     EncodingSelection _selected_encoding;
 
+    Label _input_base_field;
+    Label _input_base_desc;
+    Label _input_exponent_field;
+    Label _input_exponent_desc;
+    Label _input_modulus_field;
+    Label _input_modulus_desc;
+    Label _exponent_modulo_result_field;
+    TextButton _calculate_exp_modulo;
+
+    Colour _label_background_colour = Colour::fromHSV(Colours::purple.getHue(), 0.5, 0.3, 1.0);
     const int _size_x = 800;
-    const int _size_y = 550;
+    const int _size_y = 650;
 };

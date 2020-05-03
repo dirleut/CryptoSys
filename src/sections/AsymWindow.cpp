@@ -9,12 +9,11 @@ AsymWindow::AsymWindow()
     addAndMakeVisible(_header);
     _header.setFont(Font(18.0, Font::bold));
     _header.setText("[ RSA ]", dontSendNotification);
-    auto darkPurple = Colours::purple.getHue();
-    _header.setColour(Label::backgroundColourId, Colour::fromHSV(darkPurple, 0.5, 0.3, 1.0));
+    _header.setColour(Label::backgroundColourId, _label_background_colour);
     _header.setJustificationType(Justification::centred);
     _header.setColour(Label::textColourId, Colours::white);
     
-    createNamedLabel(&_key_length_field, &_length_field_desc, CharPointer_UTF8("Длина ключа"), Justification::right, Colours::white, Colour::fromHSV(darkPurple, 0.5, 0.3, 1.0));
+    createNamedLabel(&_key_length_field, &_length_field_desc, CharPointer_UTF8("Длина ключа"), Justification::right, Colours::white, _label_background_colour);
     _key_length_field.setText(String(_init_key_length), dontSendNotification);
     _key_length_field.onTextChange = [this] {
         _init_key_length = _key_length_field.getTextValue().toString().getIntValue();
@@ -24,14 +23,14 @@ AsymWindow::AsymWindow()
     _keys_gen_button.setButtonText(CharPointer_UTF8("Сгенерировать ключи"));
     _keys_gen_button.addListener(this);
 //===================================================================================================
-    createNamedLabel(&_private_key_field, &_private_key_desc, CharPointer_UTF8("Закрытый ключ"), Justification::right, Colours::white, Colour::fromHSV(darkPurple, 0.5, 0.3, 1.0));
+    createNamedLabel(&_private_key_field, &_private_key_desc, CharPointer_UTF8("Закрытый ключ"), Justification::right, Colours::white, _label_background_colour);
     _private_key_field.onTextChange = [this]{};
     
-    createNamedLabel(&_public_key_field, &_public_key_desc, CharPointer_UTF8("Открытый ключ"), Justification::right, Colours::white, Colour::fromHSV(darkPurple, 0.5, 0.3, 1.0));
+    createNamedLabel(&_public_key_field, &_public_key_desc, CharPointer_UTF8("Открытый ключ"), Justification::right, Colours::white, _label_background_colour);
     _public_key_field.onTextChange = [this]{};
 //===================================================================================================
     createNamedLabel(&_input_key_field, &_input_key_desc, CharPointer_UTF8("Ключ"), Justification::right,
-                     Colours::white, Colour::fromHSV(darkPurple, 0.5, 0.3, 1.0));
+                     Colours::white, _label_background_colour);
     _input_key_field.onTextChange = [this] {
         String checkKey = _input_key_field.getTextValue().toString();
         if (!checkKey.containsChar (',')) {
@@ -42,7 +41,7 @@ AsymWindow::AsymWindow()
     };
 
     createNamedLabel(&_msg_hash_field, &_hash_field_desc, CharPointer_UTF8("MD5 сообщения"), Justification::right,
-                     Colours::white, Colour::fromHSV(darkPurple, 0.5, 0.3, 1.0));
+                     Colours::white, _label_background_colour);
 
 //===================================================================================================
     addAndMakeVisible(_apply_key_button);
@@ -76,7 +75,21 @@ AsymWindow::AsymWindow()
     _text_block.setScrollbarsShown(true);
     _text_block.setMultiLine(true);
     _text_block.setText(CharPointer_UTF8("Введите текст для шифрования..."));
+//===================================================================================================
+    createNamedLabel(&_input_base_field, &_input_base_desc, CharPointer_UTF8("Основание"),
+                     Justification::right, Colours::white, _label_background_colour);
+    createNamedLabel(&_input_exponent_field, &_input_exponent_desc, CharPointer_UTF8("Степень"),
+                     Justification::right, Colours::white, _label_background_colour);
+    createNamedLabel(&_input_modulus_field, &_input_modulus_desc, CharPointer_UTF8("Модуль"),
+                     Justification::right, Colours::white, _label_background_colour);
 
+    addAndMakeVisible(_exponent_modulo_result_field);
+    _exponent_modulo_result_field.setEditable(true);
+    _exponent_modulo_result_field.setColour(Label::backgroundColourId, _label_background_colour);
+
+    addAndMakeVisible(_calculate_exp_modulo);
+    _calculate_exp_modulo.setButtonText(CharPointer_UTF8("Расчитать"));
+    _calculate_exp_modulo.addListener(this);
     setSize(_size_x, _size_y);
 }
 //===================================================================================================
@@ -88,6 +101,19 @@ AsymWindow::~AsymWindow()
     _bin_encoding_button.removeListener(this);
     _hex_encoding_button.removeListener(this);
     _utf8_encoding_button.removeListener(this);
+}
+
+void AsymWindow::createNamedLabel(Label *main, Label *attached, const String &text,
+                                  Justification justification, Colour textColour, Colour backgroundColour) {
+    addAndMakeVisible(attached);
+    attached->setText(text, dontSendNotification);
+    attached->attachToComponent(main, true);
+    attached->setColour(Label::textColourId, textColour);
+    attached->setJustificationType(justification);
+
+    addAndMakeVisible(main);
+    main->setEditable(true);
+    main->setColour(Label::backgroundColourId, backgroundColour);
 }
 
 void AsymWindow::paint (Graphics& g)
@@ -113,7 +139,10 @@ void AsymWindow::buttonClicked(Button *clicked) {
         encryptTextSection();
     }
     else if (clicked == &_get_msg_hash_button) {
-        showTextHash();
+        calculateTextHash();
+    }
+    else if (clicked == &_calculate_exp_modulo) {
+        calculateExponentModulo();
     }
 }
 
@@ -179,7 +208,7 @@ void AsymWindow::encryptTextSection() {
     _text_block.setText(String(chars));
 }
 
-void AsymWindow::showTextHash() {
+void AsymWindow::calculateTextHash() {
     std::string chars(_text_block.getTextValue().toString().toStdString());
     if (chars.empty()) {
         showMessage("Секция текста пуста", "Ошибка");
@@ -219,6 +248,24 @@ void AsymWindow::showTextHash() {
 
     MD5 md5((char*)data, strlen(data));
     _msg_hash_field.setText(md5.toHexString(), dontSendNotification);
+}
+
+void AsymWindow::calculateExponentModulo() {
+    BigInteger base(_input_base_field.getTextValue().toString().getIntValue());
+    BigInteger exponent(_input_exponent_field.getTextValue().toString().getIntValue());
+    BigInteger modulus(_input_modulus_field.getTextValue().toString().getIntValue());
+
+    if (base.isNegative() ||
+        exponent.isNegative() ||
+        modulus.isNegative())
+    {
+        showMessage("Калькулятор возведения в степень по модулю не поддерживает отрицательные числа", "Ошибка");
+        return;
+    }
+
+    base.exponentModulo(exponent, modulus);
+    int64 result = base.toInt64();
+    _exponent_modulo_result_field.setText(String(result), dontSendNotification);
 }
 
 void AsymWindow::decodeToBinary() {
@@ -320,19 +367,6 @@ void AsymWindow::decodeToUTF8() {
     _text_block.setText(String(chars));
 }
 
-void AsymWindow::createNamedLabel(Label *main, Label *attached, const String &text,
-                                  Justification justification, Colour textColour, Colour backgroundColour) {
-    addAndMakeVisible(attached);
-    attached->setText(text, dontSendNotification);
-    attached->attachToComponent(main, true);
-    attached->setColour(Label::textColourId, textColour);
-    attached->setJustificationType(justification);
-    
-    addAndMakeVisible(main);
-    main->setEditable(true);
-    main->setColour(Label::backgroundColourId, backgroundColour);
-}
-
 void AsymWindow::showMessage(const std::string &message, const std::string &header) {
     auto dialog = std::make_unique<PopUp>(message);
     DialogWindow::showModalDialog(header, dialog.get(), this, Colours::grey, true);
@@ -360,7 +394,7 @@ void AsymWindow::resized()
                                  getWidth() - element_size_x, element_size_y);
     _public_key_field.setBounds(element_pos_x, 80 + element_distance_y,
                                 getWidth() - element_size_x, element_size_y);
-    
+
     _input_key_field.setBounds(180, 170,
                                getWidth() - element_size_x + 10, element_size_y);
     _apply_key_button.setBounds (180, 170 + element_distance_y,
@@ -379,6 +413,19 @@ void AsymWindow::resized()
                                    toggle_size_x + 50, toggle_size_y);
     _utf8_encoding_button.setBounds(toggle_pos_x, toggle_pos_y + 3 * toggle_distance_y,
                                     toggle_size_x, toggle_size_y);
+
+    // TODO подправить размер при изменении размера
+    _input_base_field.setBounds((getWidth() - 20) / 3 * 2 + 100, 300,
+                                getWidth() - _size_x + element_size_x - 30, element_size_y);
+    _input_exponent_field.setBounds((getWidth() - 20) / 3 * 2 + 100, 300 + element_distance_y,
+                                getWidth() - _size_x + element_size_x - 30, element_size_y);
+    _input_modulus_field.setBounds((getWidth() - 20) / 3 * 2 + 100, 300 + 2 * element_distance_y,
+                                getWidth() - _size_x + element_size_x - 30, element_size_y);
+
+    _exponent_modulo_result_field.setBounds((getWidth() - 20) / 3 * 2 + 100, 300 + 3 * element_distance_y,
+                                            getWidth() - _size_x + element_size_x - 30, element_size_y);
+    _calculate_exp_modulo.setBounds((getWidth() - 20) / 3 * 2 + 15, 300 + 3 * element_distance_y,
+                                    element_size_x - 120, element_size_y);
 
     _text_block.setBounds(10, 300, (getWidth() - 20) / 3 * 2, getHeight() - 310);
 }
