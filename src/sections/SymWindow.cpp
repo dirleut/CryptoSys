@@ -21,6 +21,7 @@ SymWindow::SymWindow()
 
     addAndMakeVisible(_init_text_block);
     _init_text_block.setScrollbarsShown(true);
+    _init_text_block.setMultiLine(true);
     _init_text_block.setCaretVisible(true);
     _init_text_block.setPopupMenuEnabled(true);
 
@@ -53,6 +54,10 @@ SymWindow::SymWindow()
     _decrypt_button.setButtonText(CharPointer_UTF8("Расшифровать"));
     _decrypt_button.addListener(this);
 
+    addAndMakeVisible(_find_key_button);
+    _find_key_button.setButtonText(CharPointer_UTF8("Подобрать ключ"));
+    _find_key_button.addListener(this);
+
     addAndMakeVisible(_result_text_desc);
     _result_text_desc.setText(CharPointer_UTF8("Результат"), dontSendNotification);
     _result_text_desc.setJustificationType(Justification::centredRight);
@@ -61,7 +66,7 @@ SymWindow::SymWindow()
     _result_text_desc.setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
     addAndMakeVisible(_result_text_block);
-    _result_text_block.setReturnKeyStartsNewLine(false);
+    _result_text_block.setMultiLine(true);
     _result_text_block.setScrollbarsShown(true);
     _result_text_block.setCaretVisible(true);
     _result_text_block.setPopupMenuEnabled(true);
@@ -82,42 +87,6 @@ SymWindow::~SymWindow()
 void SymWindow::paint(Graphics& g)
 {
     g.fillAll(Colour (0xff008000));
-}
-
-void SymWindow::resized()
-{
-    const int toggle_pos_x = 30;
-    const int toggle_pos_y = 150;
-    const int toggle_distance_y = 30;
-
-    const int button_size_x = 150;
-    const int button_size_y = 24;
-    const int margin_x = 170;
-    const int button_pos_y = 200;
-
-    const int text_block_size_x = 320;
-    const int text_block_size_y = 80;
-
-    _caesar_toggle.setBounds(toggle_pos_x, toggle_pos_y,
-                             button_size_x, button_size_y);
-    _vigenere_toggle.setBounds(toggle_pos_x, toggle_pos_y + toggle_distance_y,
-                               button_size_x, button_size_y);
-    _scytale_toggle.setBounds(toggle_pos_x, toggle_pos_y + 2 * toggle_distance_y,
-                              button_size_x, button_size_y);
-
-    _init_text_block.setBounds(margin_x, 30, text_block_size_x, text_block_size_y);
-    _init_text_desc.setBounds(-30, 40, 200, button_size_y);
-
-    _key_input_field.setBounds(margin_x, 120, text_block_size_x, button_size_y);
-    _key_field_desc.setBounds(120, 120, button_size_x, button_size_y);
-
-    _encrypt_button.setBounds(margin_x, button_pos_y,
-                              button_size_x, button_size_y);
-    _decrypt_button.setBounds(margin_x + text_block_size_x - button_size_x, button_pos_y,
-                              button_size_x, button_size_y);
-
-    _result_text_block.setBounds(margin_x, 250, text_block_size_x, text_block_size_y);
-    _result_text_desc.setBounds(50, 260, 120, button_size_y);
 }
 
 void SymWindow::applyCaesar(short shift)
@@ -247,4 +216,43 @@ void SymWindow::buttonClicked(Button* clicked)
 void SymWindow::showMessage(const std::string &message, const std::string &header) {
     auto dialog = std::make_unique<PopUp>(message);
     DialogWindow::showModalDialog(header, dialog.get(), this, Colours::grey, true);
+}
+
+void SymWindow::resized()
+{
+    const int toggle_pos_x = 30;
+    const int toggle_pos_y = 150;
+    const int toggle_distance_y = 30;
+
+    const int button_size_x = 120;
+    const int button_size_y = 24;
+    const int margin_x = 170;
+    const int button_pos_y = 200;
+
+    const int text_block_size_x = 420;
+    const int text_block_size_y = 80;
+
+    _caesar_toggle.setBounds(toggle_pos_x, toggle_pos_y,
+                             button_size_x, button_size_y);
+    _vigenere_toggle.setBounds(toggle_pos_x, toggle_pos_y + toggle_distance_y,
+                               button_size_x, button_size_y);
+    _scytale_toggle.setBounds(toggle_pos_x, toggle_pos_y + 2 * toggle_distance_y,
+                              button_size_x, button_size_y);
+
+    _init_text_block.setBounds(margin_x, 30, getWidth() - _size_x + text_block_size_x, getHeight() - _size_y + text_block_size_y);
+    _init_text_desc.setBounds(-30, 40, 200, button_size_y);
+
+    _key_input_field.setBounds(margin_x, getHeight() - _size_y + 120, getWidth() - _size_x + text_block_size_x, button_size_y);
+    _key_field_desc.setBounds(120, getHeight() - _size_y + 120, button_size_x, button_size_y);
+
+    _encrypt_button.setBounds(margin_x, getHeight() - _size_y + button_pos_y,
+                              button_size_x, button_size_y);
+    _decrypt_button.setBounds(margin_x + button_size_x + 30, getHeight() - _size_y + button_pos_y,
+                              button_size_x, button_size_y);
+
+    _find_key_button.setBounds(margin_x + 2 * (button_size_x + 30), getHeight() - _size_y + button_pos_y,
+                              button_size_x, button_size_y);
+
+    _result_text_block.setBounds(margin_x, getHeight() - _size_y + 250, getWidth() - _size_x + text_block_size_x, text_block_size_y);
+    _result_text_desc.setBounds(50, getHeight() - _size_y + 260, 120, button_size_y);
 }

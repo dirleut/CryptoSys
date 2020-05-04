@@ -26,16 +26,19 @@ private:
 
     CipherSelection _selected_cipher = CAESAR;
 
-    TextButton _encrypt_button;
     TextEditor _init_text_block;
     Label _init_text_desc;
-    Label _key_field_desc;
     TextEditor _key_input_field;
-    Label _result_text_desc;
-    TextEditor _result_text_block;
-    TextButton _decrypt_button;
+    Label _key_field_desc;
 
-    const int _size_x = 600;
+    TextButton _encrypt_button;
+    TextButton _decrypt_button;
+    TextButton _find_key_button;
+
+    TextEditor _result_text_block;
+    Label _result_text_desc;
+
+    const int _size_x = 700;
     const int _size_y = 380;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SymWindow)
 };
