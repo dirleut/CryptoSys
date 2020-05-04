@@ -286,6 +286,8 @@ void AsymWindow::calculateExponentModulo() {
 }
 
 void AsymWindow::factorize() {
+    // TODO вынести в отдельный файл
+    // TODO протестировать с большими числами
     int64 number = _input_number_to_factorize_field.getTextValue().toString().getIntValue();
 
     if (number == 0) {
