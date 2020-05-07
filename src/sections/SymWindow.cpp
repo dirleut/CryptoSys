@@ -85,6 +85,7 @@ SymWindow::~SymWindow()
     _vigenere_toggle.removeListener(this);
     _encrypt_button.removeListener(this);
     _decrypt_button.removeListener(this);
+    _find_key_button.removeListener(this);
 }
 
 //==============================================================================

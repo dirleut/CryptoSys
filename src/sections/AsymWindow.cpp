@@ -115,6 +115,8 @@ AsymWindow::~AsymWindow()
     _bin_encoding_button.removeListener(this);
     _hex_encoding_button.removeListener(this);
     _utf8_encoding_button.removeListener(this);
+    _calculate_exp_modulo_button.removeListener(this);
+    _factorize_button.removeListener(this);
 }
 
 void AsymWindow::createNamedLabel(Label *main, Label *attached, const String &text,
