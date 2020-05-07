@@ -188,12 +188,15 @@ void SymWindow::findKey()
 void SymWindow::buttonClicked(Button* clicked)
 {
     if(clicked == &_caesar_toggle) {
+        _find_key_button.setVisible(true);
         _selected_cipher = CAESAR;
     }
     else if(clicked == &_scytale_toggle) {
+        _find_key_button.setVisible(false);
         _selected_cipher = SCYTALE;
     }
     else if(clicked == &_vigenere_toggle) {
+        _find_key_button.setVisible(false);
         _selected_cipher = VIGINERE;
     }
     else if(clicked == &_encrypt_button)
