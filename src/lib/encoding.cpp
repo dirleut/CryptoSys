@@ -1,6 +1,7 @@
 // TODO написать тесты
-#include "encoding.h"
+#include "Encoding.h"
 #include <bitset>
+#include <sstream>
 
 static const char* _hexCharToBin(char c) {
     switch(toupper(c))
@@ -61,6 +62,10 @@ bool hexToBinary(std::string &hexstr) {
     for(unsigned i = 0; i != hexstr.length(); ++i)
        bin += _hexCharToBin(hexstr[i]);
     hexstr = bin;
+
+    size_t pos = hexstr.find('1');
+    hexstr = hexstr.substr(pos);
+
     return true;
 }
 
@@ -118,6 +123,7 @@ bool binaryToUTF8(std::string &bitstr) {
         outstr += symb;
     }
     bitstr = outstr;
+    bitstr = bitstr.substr(0, bitstr.size() - 1);
     return true;
 }
 

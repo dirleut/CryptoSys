@@ -3,7 +3,7 @@
 #include <sstream>
 #include <string>
 #include <bitset>
-#include "../JuceLibraryCode/JuceHeader.h"
+#include <JuceHeader.h>
 #include "../lib/Toggles.h"
 
  // TODO разгрузить класс

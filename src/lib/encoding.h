@@ -1,5 +1,5 @@
 #pragma once
-#include "../JuceLibraryCode/JuceHeader.h"
+#include <string>
 
 bool binaryToHex(std::string &str);
 bool binaryToUTF8(std::string &bitstr);

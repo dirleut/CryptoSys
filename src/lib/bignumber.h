@@ -1,5 +1,5 @@
 #pragma once
-#include "../JuceLibraryCode/JuceHeader.h"
+#include <JuceHeader.h>
 
 BigInteger modulo(BigInteger base, BigInteger exp, BigInteger modulus);
 BigInteger fromBinString(const std::string &binstr);
