@@ -287,25 +287,29 @@ void AsymWindow::calculateExponentModulo() {
     _exponent_modulo_result_field.setText(String(result), dontSendNotification);
 }
 
+// TODO вынести в отдельный файл
+// TODO добавить возможность работать с числами большего размера
+// Показывать предупреждение с вероятной длительностью вычислений
+// Запускать отдельный поток с окном, которое позволит прервать фактроизацию
+// TODO оптимизировать алгоритм
 void AsymWindow::factorize() {
-    // TODO вынести в отдельный файл
-    // TODO протестировать с большими числами
-    int64 number = _input_number_to_factorize_field.getTextValue().toString().getIntValue();
-
-    if (number == 0) {
+    std::string str_number = _input_number_to_factorize_field.getTextValue().toString().toStdString();
+    if (str_number.size() > 10) {
+        showMessage("Размер числа слишком большой", "Ошибка");
         return;
     }
-    else if (number < 0) {
+    if (str_number.front() == '-') {
         showMessage("Поддерживаются только\nположительные числа", "Ошибка");
         return;
     }
-    else if (number > 65536) {
-        showMessage("Число слишком большое", "Ошибка");
+
+    long long number = std::stoll(str_number);
+    if (number == 0) {
         return;
     }
 
-    std::vector<uint64_t> factors;
-    uint64_t factor = 2;
+    std::vector<long long> factors;
+    long long factor = 2;
     while (true) {
         if (number % factor == 0) {
             factors.push_back(factor);
