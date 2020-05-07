@@ -294,6 +294,10 @@ void AsymWindow::calculateExponentModulo() {
 // TODO оптимизировать алгоритм
 void AsymWindow::factorize() {
     std::string str_number = _input_number_to_factorize_field.getTextValue().toString().toStdString();
+    if (str_number.empty()) {
+        showMessage("Пустое поле", "Ошибка");
+        return;
+    }
     if (str_number.size() > 10) {
         showMessage("Размер числа слишком большой", "Ошибка");
         return;
