@@ -2,8 +2,7 @@
 #include <algorithm>
 #include <map>
 
-// TODO точки, запятые, дефисы и перенос строк
-// TODO вынести все проверки
+#include <iostream>
 
 std::map<char, double> english_frequencies = {
     {'A', 0.086}, {'B', 0.014}, {'C', 0.028}, {'D', 0.028},
@@ -15,9 +14,11 @@ std::map<char, double> english_frequencies = {
     {'Y', 0.020}, {'Z', 0.001}
 };
 
+// TODO точки, запятые, дефисы и перенос строк
+// TODO вынести все проверки
 bool isLatin(const std::string &str) {
   return str.size() > 0 &&
-    str.find_first_not_of("*-_,.!? 0abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ", 0) == std::string::npos;
+    str.find_first_not_of("*:'-_,.!? 0abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ", 0) == std::string::npos;
 }
 
 void leaveLettersOnly(std::string& content) {
@@ -72,18 +73,28 @@ std::string scytale(const std::string& msg, short shift)
 // Критерий Пирсона
 bool isPlainEnglishText(const std::string& text)
 {
-    double border = 37.65;
-
-    std::map<char, double> letters;
+    double border = 44.3;
+    /*
+    std::map<char, uint32_t> letters = {
+        {'A', 0}, {'B', 0}, {'C', 0}, {'D', 0},
+        {'E', 0}, {'F', 0}, {'G', 0}, {'H', 0},
+        {'I', 0}, {'J', 0}, {'K', 0}, {'L', 0},
+        {'M', 0}, {'N', 0}, {'O', 0}, {'P', 0},
+        {'Q', 0}, {'R', 0}, {'S', 0}, {'T', 0},
+        {'U', 0}, {'V', 0}, {'W', 0}, {'X', 0},
+        {'Y', 0}, {'Z', 0}
+    };
+    */
+    std::map<char, uint32_t> letters;
     for (size_t i = 0; i < text.size(); ++i)
     {
-        if (letters.find(text[i]) == letters.end()) {
-            letters[text[i]] = 1;
-        } else {
-            ++letters[text[i]];
-        }
+        ++letters[text[i]];
     }
-
+    for (auto it = letters.begin(); it != letters.end(); ++it)
+    {
+        std::cout << it->first << "->" << it->second << std::endl;
+    }
+    
     double chi_squared = 0.0;
     for (auto it = letters.begin(); it != letters.end(); ++it)
     {
@@ -95,4 +106,22 @@ bool isPlainEnglishText(const std::string& text)
     }
 
     return chi_squared < border && chi_squared > 0;
+}
+
+int findCaesarCiperKey(const std::string& msg)
+{
+    if (isPlainEnglishText(msg)) {
+        return 0;
+    }
+
+    int possible_key = 1;
+    for (; possible_key < LAT_ALPHABET_SIZE; ++possible_key)
+    {
+        std::string text_to_check = msg;
+        caesar(text_to_check, LAT_ALPHABET_SIZE - possible_key);
+        if (isPlainEnglishText(text_to_check)) {
+            break;
+        }
+    }
+    return possible_key;
 }

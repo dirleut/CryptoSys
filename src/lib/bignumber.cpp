@@ -1,4 +1,4 @@
-#include "Bignumber.h"
+#include "bignumber.h"
 // TODO написать тесты
 BigInteger modulo(BigInteger base, BigInteger exp, BigInteger modulus) {
     BigInteger x=1, y = base;

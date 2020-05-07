@@ -1,5 +1,5 @@
 // TODO написать тесты
-#include "Encoding.h"
+#include "encoding.h"
 #include <bitset>
 
 static const char* _hexCharToBin(char c) {

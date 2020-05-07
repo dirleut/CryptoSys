@@ -10,3 +10,5 @@ void leaveLettersOnly(std::string& content);
 void caesar(std::string& msg, short shift);
 void vigenere(std::string& msg, std::string& key, bool encrypt);
 std::string scytale(const std::string& msg, short shift);
+
+int findCaesarCiperKey(const std::string& msg);

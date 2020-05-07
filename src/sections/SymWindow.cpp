@@ -53,6 +53,10 @@ SymWindow::SymWindow()
     addAndMakeVisible(_decrypt_button);
     _decrypt_button.setButtonText(CharPointer_UTF8("Расшифровать"));
     _decrypt_button.addListener(this);
+    
+    addAndMakeVisible(_find_key_button);
+    _find_key_button.setButtonText(CharPointer_UTF8("Подобрать ключ"));
+    _find_key_button.addListener(this);
 
     addAndMakeVisible(_find_key_button);
     _find_key_button.setButtonText(CharPointer_UTF8("Подобрать ключ"));
@@ -151,6 +155,36 @@ void SymWindow::applyScytale(short shift, bool encrypt)
     }
 }
 
+void SymWindow::findKey()
+{
+    std::string msg = _init_text_block.getTextValue().toString().toStdString();
+    if (msg.empty()) {
+        showMessage("Пустое сообщение", "Ошибка");
+        return;
+    }
+    if (msg.size() < 100) {
+        showMessage("Сообщение слишком короткое", "Ошибка");
+        return;
+    }
+    switch (_selected_cipher) {
+        case CAESAR:
+        {
+            _key_input_field.setText(String(findCaesarCiperKey(msg)));
+            break;
+        }
+        case SCYTALE:
+        {
+            break;
+        }
+        case VIGINERE:
+        {
+            break;
+        }
+        default:
+            break;
+    }
+}
+
 void SymWindow::buttonClicked(Button* clicked)
 {
     if(clicked == &_caesar_toggle) {
@@ -210,6 +244,9 @@ void SymWindow::buttonClicked(Button* clicked)
             default:
                 break;
         }
+    }
+    else if (clicked == &_find_key_button) {
+        findKey();
     }
 }
 

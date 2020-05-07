@@ -1,8 +1,8 @@
 #include "AsymWindow.h"
 
 #include <string>
-#include "../lib/Encoding.h"
-#include "../lib/Bignumber.h"
+#include "../lib/encoding.h"
+#include "../lib/bignumber.h"
 #include "../lib/PopUp.h"
 
 // TODO рефакторить

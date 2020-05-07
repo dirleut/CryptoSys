@@ -18,6 +18,7 @@ private:
     // TODO сделать enum
     void applyVigenere(bool encrypt);
     void applyScytale(short shift, bool encrypt);
+    void findKey();
     void showMessage(const std::string &message, const std::string &header);
 
     ToggleButton _caesar_toggle { CharPointer_UTF8("Цезаря") };
