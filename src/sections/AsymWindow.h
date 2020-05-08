@@ -6,7 +6,6 @@
 #include <JuceHeader.h>
 #include "../lib/Toggles.h"
 
- // TODO разгрузить класс
 class AsymWindow : public Component, public Button::Listener
 {
 public:
@@ -33,6 +32,12 @@ public:
 
 private:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AsymWindow)
+
+    void initializeKeysElements();
+    void initializeEncodingElements();
+    void initializeAnalysisElements();
+    void initializeTextElements();
+
     TextButton _keys_gen_button;
     TextButton _apply_key_button;
     TextButton _get_msg_hash_button;

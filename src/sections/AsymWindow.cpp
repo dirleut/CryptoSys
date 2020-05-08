@@ -15,22 +15,44 @@ AsymWindow::AsymWindow()
     _header.setJustificationType(Justification::centred);
     _header.setColour(Label::textColourId, Colours::white);
     
+    initializeKeysElements();
+    initializeEncodingElements();
+    initializeAnalysisElements();
+    initializeTextElements();
+
+    setSize(_size_x, _size_y);
+}
+
+AsymWindow::~AsymWindow()
+{
+    _keys_gen_button.removeListener(this);
+    _apply_key_button.removeListener(this);
+    _get_msg_hash_button.removeListener(this);
+    _bin_encoding_button.removeListener(this);
+    _hex_encoding_button.removeListener(this);
+    _utf8_encoding_button.removeListener(this);
+    _calculate_exp_modulo_button.removeListener(this);
+    _factorize_button.removeListener(this);
+}
+
+void AsymWindow::initializeKeysElements()
+{
     createNamedLabel(&_key_length_field, &_length_field_desc, CharPointer_UTF8("Длина ключа"), Justification::right, Colours::white, _label_background_colour);
     _key_length_field.setText(String(_init_key_length), dontSendNotification);
     _key_length_field.onTextChange = [this] {
         _init_key_length = _key_length_field.getTextValue().toString().getIntValue();
     };
-    
+
     addAndMakeVisible(_keys_gen_button);
     _keys_gen_button.setButtonText(CharPointer_UTF8("Сгенерировать ключи"));
     _keys_gen_button.addListener(this);
-//===================================================================================================
+
     createNamedLabel(&_private_key_field, &_private_key_desc, CharPointer_UTF8("Закрытый ключ"), Justification::right, Colours::white, _label_background_colour);
     _private_key_field.onTextChange = [this]{};
-    
+
     createNamedLabel(&_public_key_field, &_public_key_desc, CharPointer_UTF8("Открытый ключ"), Justification::right, Colours::white, _label_background_colour);
     _public_key_field.onTextChange = [this]{};
-//===================================================================================================
+
     createNamedLabel(&_input_key_field, &_input_key_desc, CharPointer_UTF8("Ключ"), Justification::right,
                      Colours::white, _label_background_colour);
     _input_key_field.onTextChange = [this] {
@@ -42,18 +64,12 @@ AsymWindow::AsymWindow()
         _key_to_apply = RSAKey(checkKey);
     };
 
-    createNamedLabel(&_msg_hash_field, &_hash_field_desc, CharPointer_UTF8("MD5 сообщения"), Justification::right,
-                     Colours::white, _label_background_colour);
-
-//===================================================================================================
     addAndMakeVisible(_apply_key_button);
     _apply_key_button.setButtonText(CharPointer_UTF8("Применить ключ"));
     _apply_key_button.addListener(this);
+}
 
-    addAndMakeVisible(_get_msg_hash_button);
-    _get_msg_hash_button.setButtonText(CharPointer_UTF8("Посчитать MD5 от сообщения"));
-    _get_msg_hash_button.addListener(this);
-//===================================================================================================
+void AsymWindow::initializeEncodingElements() {
     addAndMakeVisible(_encoding_desc);
     _encoding_desc.setColour(Label::textColourId, Colours::white);
     
@@ -71,13 +87,10 @@ AsymWindow::AsymWindow()
     _bin_encoding_button.setRadioGroupId(EncodingSelectionButtons);
     _hex_encoding_button.setRadioGroupId(EncodingSelectionButtons);
     _utf8_encoding_button.setRadioGroupId(EncodingSelectionButtons);
-//===================================================================================================
-    addAndMakeVisible(_text_block);
-    _text_block.setCaretVisible(true);
-    _text_block.setScrollbarsShown(true);
-    _text_block.setMultiLine(true);
-    _text_block.setText(CharPointer_UTF8("Введите текст для шифрования..."));
-//===================================================================================================
+}
+
+void AsymWindow::initializeAnalysisElements() {
+
     createNamedLabel(&_input_base_field, &_input_base_desc, CharPointer_UTF8("Основание"),
                      Justification::right, Colours::white, _label_background_colour);
     createNamedLabel(&_input_exponent_field, &_input_exponent_desc, CharPointer_UTF8("Степень"),
@@ -93,7 +106,6 @@ AsymWindow::AsymWindow()
     _calculate_exp_modulo_button.setButtonText(CharPointer_UTF8("Расчитать"));
     _calculate_exp_modulo_button.addListener(this);
 
-//===================================================================================================
     createNamedLabel(&_input_number_to_factorize_field, &_input_number_to_factorize_desc, CharPointer_UTF8("Факторизация"),
                      Justification::right, Colours::white, _label_background_colour);
     addAndMakeVisible(_factorization_result_field);
@@ -103,20 +115,21 @@ AsymWindow::AsymWindow()
     addAndMakeVisible(_factorize_button);
     _factorize_button.setButtonText(CharPointer_UTF8("Факторизовать"));
     _factorize_button.addListener(this);
-
-    setSize(_size_x, _size_y);
 }
-//===================================================================================================
-AsymWindow::~AsymWindow()
-{
-    _keys_gen_button.removeListener(this);
-    _apply_key_button.removeListener(this);
-    _get_msg_hash_button.removeListener(this);
-    _bin_encoding_button.removeListener(this);
-    _hex_encoding_button.removeListener(this);
-    _utf8_encoding_button.removeListener(this);
-    _calculate_exp_modulo_button.removeListener(this);
-    _factorize_button.removeListener(this);
+
+void AsymWindow::initializeTextElements() {
+    createNamedLabel(&_msg_hash_field, &_hash_field_desc, CharPointer_UTF8("MD5 сообщения"), Justification::right,
+                        Colours::white, _label_background_colour);
+
+    addAndMakeVisible(_get_msg_hash_button);
+    _get_msg_hash_button.setButtonText(CharPointer_UTF8("Посчитать MD5 от сообщения"));
+    _get_msg_hash_button.addListener(this);
+
+    addAndMakeVisible(_text_block);
+    _text_block.setCaretVisible(true);
+    _text_block.setScrollbarsShown(true);
+    _text_block.setMultiLine(true);
+    _text_block.setText(CharPointer_UTF8("Введите текст для шифрования..."));
 }
 
 void AsymWindow::createNamedLabel(Label *main, Label *attached, const String &text,
