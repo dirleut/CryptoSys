@@ -291,7 +291,6 @@ void AsymWindow::calculateExponentModulo() {
 // TODO добавить возможность работать с числами большего размера
 // Показывать предупреждение с вероятной длительностью вычислений
 // Запускать отдельный поток с окном, которое позволит прервать фактроизацию
-// TODO оптимизировать алгоритм
 void AsymWindow::factorize() {
     std::string str_number = _input_number_to_factorize_field.getTextValue().toString().toStdString();
     if (str_number.empty()) {
@@ -313,21 +312,28 @@ void AsymWindow::factorize() {
     }
 
     std::vector<long long> factors;
-    long long factor = 2;
-    while (true) {
-        if (number % factor == 0) {
-            factors.push_back(factor);
-            if (number - factor == 0) {
-                break;
-            }
-            number /= factor;
-        } else {
-            if (factor > 2) {
-                factor += 2;
-            } else {
-              ++factor;
-            }
+
+    // Попробуем сначала числа 2, 3, 5
+    for (int divisor : {2, 3, 5}) {
+        while (number % divisor == 0) {
+            factors.push_back(divisor);
+            number /= divisor;
         }
+    }
+    
+    // Перебираем числа 5,7,11,13,17,19,23...
+    int increments[8] = {4, 2, 4, 2, 4, 6, 2, 6};
+    int i = 0;
+    for (long long divisor = 7; divisor * divisor <= number; divisor += increments[i++]) {
+        while (number % divisor == 0) {
+            factors.push_back(divisor);
+            number /= divisor;
+        }
+        if (i == 8)
+            i = 0;
+    }
+    if (number > 1) {
+        factors.push_back(number);
     }
 
     std::string result = "";
