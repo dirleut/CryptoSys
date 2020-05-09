@@ -13,10 +13,10 @@ public:
     void buttonClicked (Button* buttonThatWasClicked) override;
 
 private:
-    std::unique_ptr<TextButton> _sym_section_button;
-    std::unique_ptr<TextButton> _asym_section_button;
-    std::unique_ptr<TextButton> _info_button;
-    std::unique_ptr<TextButton> _lfsr_section_button;
+    TextButton _sym_section_button;
+    TextButton _asym_section_button;
+    TextButton _info_button;
+    TextButton _lfsr_section_button;
 
     const int _size_x = 500;
     const int _size_y = 300;
