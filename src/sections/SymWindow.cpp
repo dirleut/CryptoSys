@@ -1,6 +1,7 @@
 
 #include "SymWindow.h"
 #include "../lib/SymCiphers.h"
+#include "../lib/Analysis.h"
 #include "../lib/PopUp.h"
 
 // TODO добавить русский алфавит

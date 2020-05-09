@@ -3,6 +3,7 @@
 #include <string>
 #include "../lib/Encoding.h"
 #include "../lib/Bignumber.h"
+#include "../lib/Analysis.h"
 #include "../lib/PopUp.h"
 
 // TODO рефакторить
@@ -174,7 +175,7 @@ void AsymWindow::buttonClicked(Button *clicked) {
         calculateExponentModulo();
     }
     else if (clicked == &_factorize_button) {
-        factorize();
+        factorizeNumber();
     }
 }
 
@@ -189,7 +190,8 @@ void AsymWindow::keyGen() {
 }
 
 void AsymWindow::encryptTextSection() {
-    if (_text_block.getTextValue().toString().toStdString() == "") {
+    std::string chars(_text_block.getTextValue().toString().toStdString());
+    if (chars.empty()) {
         showMessage("Секция текста пуста", "Ошибка");
         return;
     }
@@ -197,7 +199,6 @@ void AsymWindow::encryptTextSection() {
         showMessage("Некорректный ключ", "Ошибка");
         return;
     }
-    std::string chars(_text_block.getTextValue().toString().toStdString());
     switch (_selected_encoding) {
         case HEX:
             hexToBinary(chars);
@@ -300,11 +301,10 @@ void AsymWindow::calculateExponentModulo() {
     _exponent_modulo_result_field.setText(String(result), dontSendNotification);
 }
 
-// TODO вынести в отдельный файл
 // TODO добавить возможность работать с числами большего размера
 // Показывать предупреждение с вероятной длительностью вычислений
 // Запускать отдельный поток с окном, которое позволит прервать фактроизацию
-void AsymWindow::factorize() {
+void AsymWindow::factorizeNumber() {
     std::string str_number = _input_number_to_factorize_field.getTextValue().toString().toStdString();
     if (str_number.empty()) {
         showMessage("Пустое поле", "Ошибка");
@@ -324,30 +324,7 @@ void AsymWindow::factorize() {
         return;
     }
 
-    std::vector<long long> factors;
-
-    // Попробуем сначала числа 2, 3, 5
-    for (int divisor : {2, 3, 5}) {
-        while (number % divisor == 0) {
-            factors.push_back(divisor);
-            number /= divisor;
-        }
-    }
-    
-    // Перебираем числа 5,7,11,13,17,19,23...
-    int increments[8] = {4, 2, 4, 2, 4, 6, 2, 6};
-    int i = 0;
-    for (long long divisor = 7; divisor * divisor <= number; divisor += increments[i++]) {
-        while (number % divisor == 0) {
-            factors.push_back(divisor);
-            number /= divisor;
-        }
-        if (i == 8)
-            i = 0;
-    }
-    if (number > 1) {
-        factors.push_back(number);
-    }
+    std::vector<long long> factors = factorize(number);
 
     std::string result = "";
     for (auto& number : factors) {

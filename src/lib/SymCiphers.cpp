@@ -2,16 +2,6 @@
 #include <algorithm>
 #include <map>
 
-std::map<char, double> english_frequencies = {
-    {'A', 0.086}, {'B', 0.014}, {'C', 0.028}, {'D', 0.028},
-    {'E', 0.130}, {'F', 0.029}, {'G', 0.010}, {'H', 0.053},
-    {'I', 0.063}, {'J', 0.011}, {'K', 0.004}, {'L', 0.034},
-    {'M', 0.055}, {'N', 0.061}, {'O', 0.070}, {'P', 0.030},
-    {'Q', 0.001}, {'R', 0.065}, {'S', 0.061}, {'T', 0.105},
-    {'U', 0.025}, {'V', 0.009}, {'W', 0.005}, {'X', 0.002},
-    {'Y', 0.020}, {'Z', 0.001}
-};
-
 // TODO точки, запятые, дефисы и перенос строк
 // TODO вынести все проверки
 bool isLatin(const std::string &str) {
@@ -66,45 +56,4 @@ std::string scytale(const std::string& msg, short shift)
         }
     }
     return std::string(result);
-}
-
-// Критерий Пирсона
-bool isPlainEnglishText(const std::string& text)
-{
-    double border = 44.3;
-    std::map<char, uint32_t> letters;
-    for (size_t i = 0; i < text.size(); ++i)
-    {
-        ++letters[text[i]];
-    }
-    
-    double chi_squared = 0.0;
-    for (auto it = letters.begin(); it != letters.end(); ++it)
-    {
-        double iteration = (it->second - (text.size() * english_frequencies[it->first]))
-            * (it->second - (text.size() * english_frequencies[it->first]))
-            / (text.size() * english_frequencies[it->first]);
-
-        chi_squared += iteration;
-    }
-
-    return chi_squared < border && chi_squared > 0;
-}
-
-int findCaesarCiperKey(const std::string& msg)
-{
-    if (isPlainEnglishText(msg)) {
-        return 0;
-    }
-
-    int possible_key = 1;
-    for (; possible_key < LAT_ALPHABET_SIZE; ++possible_key)
-    {
-        std::string text_to_check = msg;
-        caesar(text_to_check, LAT_ALPHABET_SIZE - possible_key);
-        if (isPlainEnglishText(text_to_check)) {
-            break;
-        }
-    }
-    return possible_key;
 }

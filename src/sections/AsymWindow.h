@@ -21,7 +21,7 @@ public:
     void encryptTextSection();
     void calculateTextHash();
     void calculateExponentModulo();
-    void factorize();
+    void factorizeNumber();
     
     void decodeToBinary();
     void decodeToHex();
