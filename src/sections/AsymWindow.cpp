@@ -104,7 +104,7 @@ void AsymWindow::initializeAnalysisElements() {
     _exponent_modulo_result_field.setColour(Label::backgroundColourId, _label_background_colour);
 
     addAndMakeVisible(_calculate_exp_modulo_button);
-    _calculate_exp_modulo_button.setButtonText(CharPointer_UTF8("Расчитать"));
+    _calculate_exp_modulo_button.setButtonText(CharPointer_UTF8("Рассчитать"));
     _calculate_exp_modulo_button.addListener(this);
 
     createNamedLabel(&_input_number_to_factorize_field, &_input_number_to_factorize_desc, CharPointer_UTF8("Факторизация"),
