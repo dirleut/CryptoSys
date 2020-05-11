@@ -1,5 +1,5 @@
 #pragma once
-#include "JuceHeader.h"
+#include "../JuceLibraryCode/JuceHeader.h"
 
 class PopUp  : public Component,
                public Button::Listener

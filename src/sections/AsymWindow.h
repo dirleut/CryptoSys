@@ -3,7 +3,7 @@
 #include <sstream>
 #include <string>
 #include <bitset>
-#include <JuceHeader.h>
+#include "../JuceLibraryCode/JuceHeader.h"
 #include "../lib/Toggles.h"
 
 class AsymWindow : public Component, public Button::Listener
@@ -27,7 +27,9 @@ public:
     void decodeToHex();
     void decodeToUTF8();
 
-    void createNamedLabel(Label *main, Label *attached, const String &text, Justification justification, Colour textColour, Colour backgroundColour);
+    void createNamedLabel(Label *main, Label *attached,
+                          const String &text, Justification justification,
+                          Colour textColour, Colour backgroundColour);
     void showMessage(const std::string &message, const std::string &header);
 
 private:

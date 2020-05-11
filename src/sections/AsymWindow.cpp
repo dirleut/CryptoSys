@@ -262,6 +262,7 @@ void AsymWindow::calculateTextHash() {
             break;
         case UTF8:
             UTF8ToBinary(chars);
+            chars += '\0';
             break;
         default:
             break;

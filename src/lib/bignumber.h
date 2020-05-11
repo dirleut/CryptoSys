@@ -1,5 +1,5 @@
 #pragma once
-#include <JuceHeader.h>
+#include "../JuceLibraryCode/JuceHeader.h"
 
 BigInteger fromBinString(const std::string &binstr);
 std::string fromBigInt(const BigInteger &bn);

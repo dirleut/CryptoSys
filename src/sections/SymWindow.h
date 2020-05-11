@@ -1,5 +1,5 @@
 #pragma once
-#include <JuceHeader.h>
+#include "../JuceLibraryCode/JuceHeader.h"
 #include "../lib/Toggles.h"
 // TODO разгрузить конструктор
 class SymWindow  : public Component,
