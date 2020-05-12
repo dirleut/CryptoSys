@@ -269,8 +269,7 @@ void AsymWindow::calculateTextHash() {
     }
 
     size_t arr_size = (chars.length() / 8) + 1;
-    char data[arr_size];
-    memset(data, 0, sizeof(arr_size));
+    char *data = new char[arr_size]();
 
     std::stringstream ss(chars);
     int i = 0;
