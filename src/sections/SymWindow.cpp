@@ -1,6 +1,5 @@
 
 #include "SymWindow.h"
-#include "../lib/SymCiphers.h"
 #include "../lib/Analysis.h"
 #include "../lib/PopUp.h"
 
@@ -110,7 +109,7 @@ void SymWindow::applyCaesar(short shift)
     _result_text_block.setText(String(msg));
 }
 
-void SymWindow::applyVigenere(bool encrypt)
+void SymWindow::applyVigenere(Operation operation)
 {
     std::string key = _key_input_field.getTextValue().toString().toStdString();
     std::string msg = _init_text_block.getTextValue().toString().toStdString();
@@ -122,11 +121,11 @@ void SymWindow::applyVigenere(bool encrypt)
         showMessage("Использован не латинский алфавит", "Ошибка");
         return;
     }
-    vigenere(msg, key, encrypt);
+    vigenere(msg, key, operation);
     _result_text_block.setText(String(msg));
 }
 
-void SymWindow::applyScytale(short shift, bool encrypt)
+void SymWindow::applyScytale(short shift, Operation operation)
 {
     if (shift == 0) {
         return;
@@ -136,25 +135,14 @@ void SymWindow::applyScytale(short shift, bool encrypt)
         return;
     }
 
-    for (size_t i = 0; i < msg.length() % shift; ++i) {
-        msg += SPEC_CHAR;
+    leaveLettersOnly(msg);
+    if (!isLatin(msg)) {
+        showMessage("Использован не латинский алфавит", "Ошибка");
+        return;
     }
-    if (encrypt) {
-        leaveLettersOnly(msg);
-        if (!isLatin(msg)) {
-            showMessage("Использован не латинский алфавит", "Ошибка");
-            return;
-        }
-        _result_text_block.setText(String(scytale(msg, shift)));
-    } else {
-        msg = scytale(msg, shift);
-        for(size_t i = 0; i < shift; ++i) {
-            if (msg.back() == SPEC_CHAR) {
-                msg = msg.substr(0, msg.size() - 1);
-            }
-        }
-        _result_text_block.setText(String(msg));
-    }
+
+    scytale(msg, shift, operation);
+    _result_text_block.setText(String(msg));
 }
 
 void SymWindow::findKey()
@@ -213,12 +201,12 @@ void SymWindow::buttonClicked(Button* clicked)
             case SCYTALE:
             {
                 short shift = _key_input_field.getTextValue().toString().getIntValue();
-                applyScytale(shift, true);
+                applyScytale(shift, ENCRYPT);
                 break;
             }
             case VIGINERE:
             {
-                applyVigenere(true);
+                applyVigenere(ENCRYPT);
                 break;
             }
             default:
@@ -238,12 +226,12 @@ void SymWindow::buttonClicked(Button* clicked)
             {
                 short shift = _init_text_block.getTextValue().toString().toStdString().length() /
                     _key_input_field.getTextValue().toString().getIntValue();
-                applyScytale(shift, false);
+                applyScytale(shift, DECRYPT);
                 break;
             }
             case VIGINERE:
             {
-                applyVigenere(false);
+                applyVigenere(DECRYPT);
                 break;
             }
             default:

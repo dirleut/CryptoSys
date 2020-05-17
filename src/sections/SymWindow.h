@@ -1,7 +1,7 @@
 #pragma once
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "../lib/Toggles.h"
-// TODO разгрузить конструктор
+#include "../lib/SymCiphers.h"
 class SymWindow  : public Component,
                    public Button::Listener
 {
@@ -15,9 +15,8 @@ public:
 
 private:
     void applyCaesar(short shift);
-    // TODO сделать enum
-    void applyVigenere(bool encrypt);
-    void applyScytale(short shift, bool encrypt);
+    void applyVigenere(Operation operation);
+    void applyScytale(short shift, Operation operation);
     void findKey();
     void showMessage(const std::string &message, const std::string &header);
 
