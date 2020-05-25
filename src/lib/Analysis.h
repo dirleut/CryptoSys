@@ -13,7 +13,12 @@ static std::map<char, double> english_frequencies = {
     {'Y', 0.020}, {'Z', 0.001}
 };
 
-bool isPlainEnglishText(const std::string& text);
-int findCaesarCiperKey(const std::string& msg);
+static double pirson_border = 44.3;
+static double english_coincidence_index = 0.0685;
+static double error = 0.0012;
+
+double calculatePirsonTest(const std::string& text);
+uint8_t findCaesarCiperKey(const std::string& msg);
+std::string findVigenereCipherKey(const std::string& msg);
 
 std::vector<long long> factorize(long long number);

@@ -1,10 +1,11 @@
 #include "Analysis.h"
 #include "SymCiphers.h"
 
+#include <math.h>
+
 // Критерий Пирсона
-bool isPlainEnglishText(const std::string& text)
+double calculatePirsonTest(const std::string& text)
 {
-    double border = 44.3;
     std::map<char, uint32_t> letters;
     for (size_t i = 0; i < text.size(); ++i)
     {
@@ -20,26 +21,134 @@ bool isPlainEnglishText(const std::string& text)
 
         chi_squared += iteration;
     }
-
-    return chi_squared < border && chi_squared > 0;
+    return chi_squared;
 }
 
-int findCaesarCiperKey(const std::string& msg)
+double calculateCoincidenceIndex(std::string text) {
+    std::map<char, double> letters;
+
+    for (size_t i = 0; i < text.size(); ++i)
+    {
+        if (letters.find(text[i]) == letters.end()) {
+            letters[text[i]] = 1;
+        } else {
+            ++letters[text[i]];
+        }
+    }
+
+    double frequencies_sum = 0.0;
+    for (auto it = letters.begin(); it != letters.end(); ++it)
+    {
+        frequencies_sum += it->second * (it->second - 1);
+    }
+
+    frequencies_sum /= text.size() * (text.size() - 1);
+    return frequencies_sum;
+}
+
+uint8_t findCaesarCiperKey(const std::string& msg)
 {
-    if (isPlainEnglishText(msg)) {
+    if (calculatePirsonTest(msg) < pirson_border &&
+        calculatePirsonTest(msg) > 0)
+    {
         return 0;
     }
 
-    int possible_key = 1;
-    for (; possible_key < LAT_ALPHABET_SIZE; ++possible_key)
+    std::vector<double> pirson_criteria;
+    for (size_t i = 0; i < LAT_ALPHABET_SIZE; ++i)
     {
         std::string text_to_check = msg;
-        caesar(text_to_check, LAT_ALPHABET_SIZE - possible_key);
-        if (isPlainEnglishText(text_to_check)) {
-            break;
+        caesar(text_to_check, LAT_ALPHABET_SIZE - i);
+        pirson_criteria.push_back(calculatePirsonTest(text_to_check));
+    }
+
+    std::vector<double> differencies;
+    for (const auto& criterium : pirson_criteria)
+    {
+        differencies.push_back(fabs(criterium - (pirson_border / 2)));
+    }
+
+    double minimum = differencies[0];
+    size_t index_min;
+    for (size_t i = 0; i < differencies.size(); ++i)
+    {
+        if (differencies[i] < minimum) {
+            minimum = differencies[i];
+            index_min = i;
         }
     }
-    return possible_key;
+
+    return index_min;
+}
+
+// TODO провести больше тестирования
+std::string findVigenereCipherKey(const std::string& msg)
+{
+    double frequencies_sum = calculateCoincidenceIndex(msg);
+    if (frequencies_sum >= english_coincidence_index - error &&
+        frequencies_sum <= english_coincidence_index + error)
+    {
+        return "";
+    }
+
+    std::vector<double> indexis;
+
+    for (size_t i = 2; i < msg.size(); ++i)
+    {
+        std::string text_to_check = "";
+
+        for (size_t j = 0; j < msg.size(); j += i)
+        {
+            text_to_check += msg[j];
+        }
+
+        if (text_to_check.size() < 100) {
+            break;
+        }
+
+        double index = calculateCoincidenceIndex(text_to_check);
+        indexis.push_back(index);
+    }
+
+    std::vector<double> differencies;
+    for (const auto& index : indexis)
+    {
+        differencies.push_back(fabs(index - english_coincidence_index));
+    }
+
+    double minimum = differencies[0];
+    int index_min;
+    for (size_t i = 0; i < differencies.size(); ++i)
+    {
+        if (differencies[i] < minimum) {
+            minimum = differencies[i];
+            index_min = i;
+        }
+    }
+
+    size_t key_length = index_min + 2;
+    std::vector<std::string> textes(key_length);
+
+    for (size_t i = 0; i < key_length; ++i)
+    {
+        for (size_t j = i; j < msg.size(); j += key_length)
+        {
+            textes[i] += msg[j];
+        }
+    }
+
+    std::vector<int> key_in_numbers;
+    for (const auto& text : textes)
+    {
+        key_in_numbers.push_back(findCaesarCiperKey(text));
+    }
+
+    std::string result_key;
+    for (const auto& letter : key_in_numbers)
+    {
+        result_key += char(letter + 65);
+    }
+    return result_key;
 }
 
 std::vector<long long> factorize(long long number)

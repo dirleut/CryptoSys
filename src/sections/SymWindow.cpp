@@ -142,6 +142,10 @@ void SymWindow::applyScytale(short shift, Operation operation)
     }
 
     scytale(msg, shift, operation);
+    if (operation == ENCRYPT) {
+        std::string full_key = std::to_string(shift) + "*" + std::to_string(msg.size() / shift);
+        _key_input_field.setText(String(full_key));
+    }
     _result_text_block.setText(String(msg));
 }
 
@@ -152,13 +156,13 @@ void SymWindow::findKey()
         showMessage("Пустое сообщение", "Ошибка");
         return;
     }
-    if (msg.size() < 100) {
-        showMessage("Сообщение слишком короткое", "Ошибка");
-        return;
-    }
     switch (_selected_cipher) {
         case CAESAR:
         {
+            if (msg.size() < 100) {
+                showMessage("Сообщение слишком короткое", "Ошибка");
+                return;
+            }
             _key_input_field.setText(String(findCaesarCiperKey(msg)));
             break;
         }
@@ -168,6 +172,11 @@ void SymWindow::findKey()
         }
         case VIGINERE:
         {
+            if (msg.size() < 1000) {
+                showMessage("Сообщение слишком короткое", "Ошибка");
+                return;
+            }
+            _key_input_field.setText(String(findVigenereCipherKey(msg)));
             break;
         }
         default:
@@ -186,7 +195,7 @@ void SymWindow::buttonClicked(Button* clicked)
         _selected_cipher = SCYTALE;
     }
     else if(clicked == &_vigenere_toggle) {
-        _find_key_button.setVisible(false);
+        _find_key_button.setVisible(true);
         _selected_cipher = VIGINERE;
     }
     else if(clicked == &_encrypt_button)
