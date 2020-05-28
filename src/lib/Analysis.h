@@ -1,5 +1,6 @@
 #pragma once
 #include <map>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -18,7 +19,9 @@ static double english_coincidence_index = 0.0685;
 static double error = 0.0012;
 
 double calculatePirsonTest(const std::string& text);
+double calculateCoincidenceIndex(std::string text);
 uint8_t findCaesarCiperKey(const std::string& msg);
 std::string findVigenereCipherKey(const std::string& msg);
+std::set<long long> findPossibleScytaleKeys(const std::string& msg);
 
 std::vector<long long> factorize(long long number);

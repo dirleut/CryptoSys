@@ -3,7 +3,6 @@
 
 #include <math.h>
 
-// Критерий Пирсона
 double calculatePirsonTest(const std::string& text)
 {
     std::map<char, uint32_t> letters;
@@ -149,6 +148,45 @@ std::string findVigenereCipherKey(const std::string& msg)
         result_key += char(letter + 65);
     }
     return result_key;
+}
+
+std::vector<long long> combination(long long N, long long K)
+{
+    std::vector<long long> combinations;
+    std::string bitmask(K, 1);
+    bitmask.resize(N, 0);
+
+    do {
+        for (size_t i = 0; i < N; ++i)
+        {
+            if (bitmask[i]) {
+                combinations.push_back(i);
+            }
+        }
+    } while (std::prev_permutation(bitmask.begin(), bitmask.end()));
+
+    return combinations;
+}
+
+std::set<long long> findPossibleScytaleKeys(const std::string& msg)
+{
+    std::set<long long> text_size_multipliers;
+    std::vector<long long> factors = factorize(msg.size());
+
+    for (int k = 1; k <= factors.size(); ++k)
+    {
+        auto comb = combination(factors.size(), k);
+        for (size_t i = 0; i < comb.size(); i += k)
+        {
+            long long multiplier = 1;
+            for (size_t j = i; j < i + k; ++j)
+            {
+                multiplier *= factors[comb[j]];
+            }
+            text_size_multipliers.insert(multiplier);
+        }
+    }
+    return  text_size_multipliers;
 }
 
 std::vector<long long> factorize(long long number)
