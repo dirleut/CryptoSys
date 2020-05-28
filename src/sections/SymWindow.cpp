@@ -33,11 +33,8 @@ SymWindow::SymWindow()
     _init_text_desc.setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
     addAndMakeVisible(_key_input_field);
-    _key_input_field.setMultiLine(false);
-    _key_input_field.setReturnKeyStartsNewLine(false);
-    _key_input_field.setScrollbarsShown(true);
-    _key_input_field.setCaretVisible(true);
-    _key_input_field.setPopupMenuEnabled(true);
+    _key_input_field.setEditable(true);
+    _key_input_field.setColour(Label::backgroundColourId, _label_background_colour);
 
     addAndMakeVisible(_key_field_desc);
     _key_field_desc.setText(CharPointer_UTF8("Ключ"), dontSendNotification);
@@ -193,7 +190,7 @@ void SymWindow::applyScytale(short shift, Operation operation)
     scytale(msg, shift, operation);
     if (operation == ENCRYPT) {
         std::string full_key = std::to_string(shift) + "*" + std::to_string(msg.size() / shift);
-        _key_input_field.setText(String(full_key));
+        _key_input_field.setText(String(full_key), dontSendNotification);
     }
     _result_text_block.setText(String(msg));
 }
@@ -212,7 +209,7 @@ void SymWindow::findKey()
                 showMessage("Сообщение слишком короткое", "Ошибка");
                 return;
             }
-            _key_input_field.setText(String(findCaesarCiperKey(msg)));
+            _key_input_field.setText(String(findCaesarCiperKey(msg)), dontSendNotification);
             break;
         }
         case SCYTALE:
@@ -225,7 +222,7 @@ void SymWindow::findKey()
                 showMessage("Сообщение слишком короткое", "Ошибка");
                 return;
             }
-            _key_input_field.setText(String(findVigenereCipherKey(msg)));
+            _key_input_field.setText(String(findVigenereCipherKey(msg)), dontSendNotification);
             break;
         }
         default:
@@ -290,7 +287,7 @@ void SymWindow::resized()
     _init_text_desc.setBounds(-30, 40, 200, button_size_y);
 
     _key_input_field.setBounds(margin_x, getHeight() - _size_y + 120, getWidth() - _size_x + text_block_size_x, button_size_y);
-    _key_field_desc.setBounds(120, getHeight() - _size_y + 120, button_size_x, button_size_y);
+    _key_field_desc.setBounds(margin_x - 50, getHeight() - _size_y + 120, button_size_x, button_size_y - 10);
 
     _encrypt_button.setBounds(margin_x, getHeight() - _size_y + button_pos_y,
                               button_size_x, button_size_y);

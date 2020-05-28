@@ -30,7 +30,7 @@ private:
 
     TextEditor _init_text_block;
     Label _init_text_desc;
-    TextEditor _key_input_field;
+    Label _key_input_field;
     Label _key_field_desc;
 
     TextButton _encrypt_button;
@@ -40,6 +40,7 @@ private:
     TextEditor _result_text_block;
     Label _result_text_desc;
 
+    Colour _label_background_colour = Colour::fromHSV(Colours::green.getHue(), 0.5, 0.3, 1.0);
     const int _size_x = 700;
     const int _size_y = 380;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SymWindow)
