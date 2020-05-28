@@ -94,6 +94,55 @@ void SymWindow::paint(Graphics& g)
     g.fillAll(Colour (0xff008000));
 }
 
+void SymWindow::encryptInitText() {
+    switch (_selected_cipher) {
+        case CAESAR:
+        {
+            short shift = _key_input_field.getTextValue().toString().getIntValue();
+            applyCaesar(shift);
+            break;
+        }
+        case SCYTALE:
+        {
+            short shift = _key_input_field.getTextValue().toString().getIntValue();
+            applyScytale(shift, ENCRYPT);
+            break;
+        }
+        case VIGINERE:
+        {
+            applyVigenere(ENCRYPT);
+            break;
+        }
+        default:
+            break;
+    }
+}
+
+void SymWindow::decryptInitText() {
+    switch (_selected_cipher) {
+        case CAESAR:
+        {
+            short shift = LAT_ALPHABET_SIZE - _key_input_field.getTextValue().toString().getIntValue();
+            applyCaesar(shift);
+            break;
+        }
+        case SCYTALE:
+        {
+            short shift = _init_text_block.getTextValue().toString().toStdString().length() /
+            _key_input_field.getTextValue().toString().getIntValue();
+            applyScytale(shift, DECRYPT);
+            break;
+        }
+        case VIGINERE:
+        {
+            applyVigenere(DECRYPT);
+            break;
+        }
+        default:
+            break;
+    }
+}
+
 void SymWindow::applyCaesar(short shift)
 {
     std::string msg = _init_text_block.getTextValue().toString().toStdString();
@@ -200,52 +249,11 @@ void SymWindow::buttonClicked(Button* clicked)
     }
     else if(clicked == &_encrypt_button)
     {
-        switch (_selected_cipher) {
-            case CAESAR:
-            {
-                short shift = _key_input_field.getTextValue().toString().getIntValue();
-                applyCaesar(shift);
-                break;
-            }
-            case SCYTALE:
-            {
-                short shift = _key_input_field.getTextValue().toString().getIntValue();
-                applyScytale(shift, ENCRYPT);
-                break;
-            }
-            case VIGINERE:
-            {
-                applyVigenere(ENCRYPT);
-                break;
-            }
-            default:
-                break;
-        }
+        encryptInitText();
     }
     else if(clicked == &_decrypt_button)
     {
-        switch (_selected_cipher) {
-            case CAESAR:
-            {
-                short shift = LAT_ALPHABET_SIZE - _key_input_field.getTextValue().toString().getIntValue();
-                applyCaesar(shift);
-                break;
-            }
-            case SCYTALE:
-            {
-                short shift = _init_text_block.getTextValue().toString().toStdString().length() /
-                    _key_input_field.getTextValue().toString().getIntValue();
-                applyScytale(shift, DECRYPT);
-                break;
-            }
-            case VIGINERE:
-            {
-                applyVigenere(DECRYPT);
-                break;
-            }
-            default:
-                break;
-        }
+        decryptInitText();
     }
     else if (clicked == &_find_key_button) {
         findKey();

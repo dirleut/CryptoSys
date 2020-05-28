@@ -60,6 +60,7 @@ void scytale(std::string& msg, short shift, Operation op)
     }
 
     msg = std::string(chars);
+    delete chars;
 
     // Удалим спец. символы в конеце при расшифровании
     if (op == DECRYPT) {

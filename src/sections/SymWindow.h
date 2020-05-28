@@ -14,6 +14,8 @@ public:
     void buttonClicked (Button* buttonThatWasClicked) override;
 
 private:
+    void encryptInitText();
+    void decryptInitText();
     void applyCaesar(short shift);
     void applyVigenere(Operation operation);
     void applyScytale(short shift, Operation operation);

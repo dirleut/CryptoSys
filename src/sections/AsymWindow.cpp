@@ -281,6 +281,7 @@ void AsymWindow::calculateTextHash() {
 
     MD5 md5((char*)data, strlen(data));
     _msg_hash_field.setText(md5.toHexString(), dontSendNotification);
+    delete [] data;
 }
 
 void AsymWindow::calculateExponentModulo() {
