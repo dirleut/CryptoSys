@@ -1,4 +1,3 @@
-// TODO написать тесты
 #include "Encoding.h"
 #include <bitset>
 #include <sstream>
@@ -87,6 +86,12 @@ static bool _checkAndAddNextUTF8Bytes(std::stringstream &ss, std::string &symb, 
 bool binaryToUTF8(std::string &bitstr) {
     if (!isBinary(bitstr)) {
         return false;
+    }
+    if(bitstr.size() % 8 != 0) {
+        int lim = 8 - (bitstr.size() % 8);
+        for(int i = 0; i < lim ; ++i){
+            bitstr.insert(0, "0");
+        }
     }
     std::stringstream ss(bitstr);
     std::string outstr;

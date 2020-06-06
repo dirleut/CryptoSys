@@ -6,7 +6,6 @@
 #include "../lib/Analysis.h"
 #include "../lib/PopUp.h"
 
-// TODO рефакторить
 AsymWindow::AsymWindow()
 {
     addAndMakeVisible(_header);

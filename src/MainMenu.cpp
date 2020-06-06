@@ -1,7 +1,6 @@
 #include "MainMenu.h"
 #include "sections/SymWindow.h"
 #include "sections/AsymWindow.h"
-// TODO разгрузить конструктор
 MainMenu::MainMenu ()
 {
     addAndMakeVisible(_info_button);
