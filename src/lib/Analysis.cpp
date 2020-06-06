@@ -1,6 +1,7 @@
 #include "Analysis.h"
 #include "SymCiphers.h"
 
+#include <algorithm>
 #include <math.h>
 
 double calculatePirsonTest(const std::string& text)
