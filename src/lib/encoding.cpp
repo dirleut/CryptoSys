@@ -61,10 +61,6 @@ bool hexToBinary(std::string &hexstr) {
     for(unsigned i = 0; i != hexstr.length(); ++i)
        bin += _hexCharToBin(hexstr[i]);
     hexstr = bin;
-
-    size_t pos = hexstr.find('1');
-    hexstr = hexstr.substr(pos);
-
     return true;
 }
 

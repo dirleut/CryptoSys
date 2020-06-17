@@ -8,7 +8,7 @@
 TEST_CASE("Encoding functions tests")
 {
 	std::string hex_string = "d092d0b2d0b5d0b4d0b8d182d0b0b8d184d180d0bed0b2d0b0d0bdd0b8d18f2e2e2e";
-	std::string binary_string = "101011110001011001000101010101001";
+	std::string binary_string = "000101011110001011001000101010101001";
 
 	SECTION("Checking if string contains only required characters")
 	{

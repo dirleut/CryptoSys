@@ -261,12 +261,12 @@ void AsymWindow::calculateTextHash() {
             break;
         case UTF8:
             UTF8ToBinary(chars);
-            chars += '\0';
             break;
         default:
             break;
     }
 
+    chars += '\0';
     size_t arr_size = (chars.length() / 8) + 1;
     char *data = new char[arr_size]();
 
