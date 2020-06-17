@@ -15,7 +15,6 @@ public:
 private:
     TextButton _sym_section_button;
     TextButton _asym_section_button;
-    TextButton _info_button;
     TextButton _lfsr_section_button;
 
     const int _size_x = 500;
