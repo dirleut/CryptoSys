@@ -284,6 +284,17 @@ void AsymWindow::calculateTextHash() {
 }
 
 void AsymWindow::calculateExponentModulo() {
+    std::string str_base = _input_base_field.getTextValue().toString().toStdString();
+    std::string str_exponent = _input_exponent_field.getTextValue().toString().toStdString();
+    std::string str_modulus = _input_modulus_field.getTextValue().toString().toStdString();
+    if (str_base.size() > 9 ||
+        str_exponent.size() > 9 ||
+        str_modulus.size() > 9)
+    {
+        showMessage("Размер чисел слишком большой", "Ошибка");
+        return;
+    }
+    
     BigInteger base(_input_base_field.getTextValue().toString().getIntValue());
     BigInteger exponent(_input_exponent_field.getTextValue().toString().getIntValue());
     BigInteger modulus(_input_modulus_field.getTextValue().toString().getIntValue());
