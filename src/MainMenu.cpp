@@ -1,6 +1,7 @@
 #include "MainMenu.h"
 #include "sections/SymWindow.h"
 #include "sections/AsymWindow.h"
+#include "sections/LfsrWindow.h"
 MainMenu::MainMenu ()
 {
     addAndMakeVisible (_sym_section_button);
@@ -43,16 +44,20 @@ void MainMenu::buttonClicked (Button* clicked)
     if (clicked == &_sym_section_button)
     {
         auto sym_section = std::make_unique<SymWindow>();
-        DialogWindow::showModalDialog(CharPointer_UTF8("Симметричная секция"), sym_section.get(), this, Colours::grey, true, true, true);
+        DialogWindow::showModalDialog(CharPointer_UTF8("Симметричная секция"), sym_section.get(), this,
+            Colours::grey, true, true, true);
     }
     else if (clicked == &_asym_section_button)
     {
         auto asym_section = std::make_unique<AsymWindow>();
-        DialogWindow::showModalDialog(CharPointer_UTF8("Acимметричная секция"), asym_section.get(), this, Colours::grey, true, true, true);
+        DialogWindow::showModalDialog(CharPointer_UTF8("Acимметричная секция"), asym_section.get(), this,
+            Colours::grey, true, true, true);
     }
     else if (clicked == &_lfsr_section_button)
     {
-        // Линейный регистр сдвига
+        auto lsfr_section = std::make_unique<LfsrWindow>();
+        DialogWindow::showModalDialog(CharPointer_UTF8("Поточное шифрование"), lsfr_section.get(), this,
+            Colours::grey, true, true, true);
     }
 }
 
